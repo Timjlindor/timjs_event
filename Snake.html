@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu Snake</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .game-wrap {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 16px;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .status {
+            font-size: 14px;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            background: #f3f3f3;
+            border: 1px solid #333;
+        }
+        .controls {
+            display: grid;
+            grid-template-columns: 60px 60px 60px;
+            grid-template-rows: 40px 40px 40px;
+            gap: 6px;
+            justify-content: center;
+            margin: 12px 0;
+        }
+        .controls button {
+            padding: 6px;
+            font-size: 14px;
+        }
+        .actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        .actions button {
+            padding: 6px 12px;
+        }
+        .back-link {
+            margin-top: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Jeu Snake</h1>
+        <p>Utilisez les flèches ou WASD pour jouer</p>
+    </div>
+
+    <div class="game-wrap">
+        <div class="game-header">
+            <div>Score: <span id="score">0</span></div>
+            <div class="status" id="status">En cours</div>
+        </div>
+        <canvas id="game" width="400" height="400" aria-label="Jeu Snake"></canvas>
+        <div class="controls" aria-label="Contrôle tactile">
+            <div></div>
+            <button id="btn-up" type="button">Haut</button>
+            <div></div>
+            <button id="btn-left" type="button">Gauche</button>
+            <button id="btn-down" type="button">Bas</button>
+            <button id="btn-right" type="button">Droite</button>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="actions">
+            <button id="btn-pause" type="button">Pause</button>
+            <button id="btn-restart" type="button">Recommencer</button>
+        </div>
+    </div>
+
+    <div class="back-link">
+        <a href="index.html">Retour à l'accueil</a>
+    </div>
+
+    <script src="snake.js"></script>
+</body>
+</html>

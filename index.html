@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timj Multi-Services</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="header">
+        <h1>Bienvenue sur ma page web</h1>
+        <img src="LOGO NOIR.png" alt="Timj">
+    <p>Nous offrons plusieurs types de services.</p>
+
+    </div>
+    
+    
+
+    <div class="container"> 
+        <ol>
+        <li><a href="Decoration.html"> Decoration</a></li>
+        <li><a href="Photographie.html"> Photographie et Vidéographie</a></li>
+        <li><a href="Premiers-Soins.html"> Premiers soins</a></li>
+        <li><a href="reservation.html"> Réservation</a></li>
+        <li><a href="Snake.html"> Jeu Snake</a></li>
+    </ol></div>
+
+
+    <section class="section" id="auth">
+        <h2>Créer un compte</h2>
+        <p>Connectez-vous pour gérer vos réservations et suivre vos paiements.</p>
+        <div class="auth-grid">
+            <div class="auth-card">
+                <h3>Inscription manuelle</h3>
+                <form id="signupForm" class="auth-form">
+                    <label for="signupEmail">Email :</label>
+                    <input type="email" id="signupEmail" name="signupEmail" placeholder="Votre email" required>
+
+                    <label for="signupPassword">Mot de passe :</label>
+                    <input type="password" id="signupPassword" name="signupPassword" placeholder="Minimum 6 caractères" required>
+
+                    <label for="signupConfirm">Confirmer le mot de passe :</label>
+                    <input type="password" id="signupConfirm" name="signupConfirm" placeholder="Répétez le mot de passe" required>
+
+                    <button type="submit">Créer le compte</button>
+                </form>
+            </div>
+            <div class="auth-card">
+                <h3>Connexion sociale</h3>
+                <div class="auth-buttons">
+                    <button type="button" data-provider="facebook">Continuer avec Facebook</button>
+                    <button type="button" data-provider="google">Continuer avec Google</button>
+                    <button type="button" data-provider="apple">Continuer avec Apple</button>
+                </div>
+                <p class="auth-note">Vous devez autoriser ces fournisseurs dans Supabase.</p>
+            </div>
+            <div class="auth-card">
+                <h3>Déjà un compte ?</h3>
+                <form id="loginForm" class="auth-form">
+                    <label for="loginEmail">Email :</label>
+                    <input type="email" id="loginEmail" name="loginEmail" placeholder="Votre email" required>
+
+                    <label for="loginPassword">Mot de passe :</label>
+                    <input type="password" id="loginPassword" name="loginPassword" placeholder="Votre mot de passe" required>
+
+                    <button type="submit">Se connecter</button>
+                </form>
+            </div>
+        </div>
+        <p id="authMessage" class="auth-message"></p>
+    </section>
+
+    <section class="section" id="wardrobe">
+        <h2>Garde-robe des paiements</h2>
+        <p class="album-description">Les preuves sont enregistrées sur cet appareil uniquement.</p>
+        <div id="wardrobe-empty" class="wardrobe-empty">Aucune preuve enregistrée pour le moment.</div>
+        <div id="wardrobe-grid" class="wardrobe-grid"></div>
+    </section>
+
+
+
+    <div class="header">
+        <p>Tous droits réservés à la Famille Lindor</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const wardrobeGrid = document.getElementById("wardrobe-grid");
+        const wardrobeEmpty = document.getElementById("wardrobe-empty");
+
+        function loadWardrobe() {
+            try {
+                return JSON.parse(localStorage.getItem("paymentWardrobe") || "[]");
+            } catch {
+                return [];
+            }
+        }
+
+        function renderWardrobe() {
+            const items = loadWardrobe().sort((a, b) => b.createdAt - a.createdAt);
+            wardrobeGrid.innerHTML = "";
+            if (items.length === 0) {
+                wardrobeEmpty.style.display = "block";
+                return;
+            }
+            wardrobeEmpty.style.display = "none";
+            items.forEach((item) => {
+                const card = document.createElement("div");
+                card.className = "wardrobe-card";
+
+                const img = document.createElement("img");
+                img.src = item.image;
+                img.alt = `Preuve de paiement - ${item.name}`;
+
+                const title = document.createElement("h3");
+                title.textContent = item.name;
+
+                const meta = document.createElement("p");
+                meta.className = "wardrobe-meta";
+                meta.textContent = `${item.method} • ${item.amount} • ${item.date}`;
+
+                card.appendChild(img);
+                card.appendChild(title);
+                card.appendChild(meta);
+                wardrobeGrid.appendChild(card);
+            });
+        }
+
+        renderWardrobe();
+
+        const SUPABASE_URL = "https://zcgwkvuyxosxfyxwmfim.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjZ3drdnV5eG9zeGZ5eHdtZmltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3NzAyMTksImV4cCI6MjA4NjM0NjIxOX0.x1VNiNBu1N8dshlgwTBBW2_GhUtovSnjQs_mYZuLUgw";
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const authMessage = document.getElementById("authMessage");
+        const signupForm = document.getElementById("signupForm");
+        const loginForm = document.getElementById("loginForm");
+        const authButtons = document.querySelectorAll(".auth-buttons button");
+
+        function setAuthMessage(text, isError = false) {
+            authMessage.textContent = text;
+            authMessage.classList.toggle("error", isError);
+        }
+
+        function getRedirectUrl() {
+            if (location.protocol === "http:" || location.protocol === "https:") {
+                return `${location.origin}/index.html`;
+            }
+            return null;
+        }
+
+        signupForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("signupEmail").value.trim();
+            const password = document.getElementById("signupPassword").value;
+            const confirm = document.getElementById("signupConfirm").value;
+            if (password !== confirm) {
+                setAuthMessage("Les mots de passe ne correspondent pas.", true);
+                return;
+            }
+            const redirectTo = getRedirectUrl();
+            const { error } = await supabaseClient.auth.signUp({
+                email,
+                password,
+                options: redirectTo ? { emailRedirectTo: redirectTo } : {}
+            });
+            if (error) {
+                setAuthMessage(error.message, true);
+            } else {
+                setAuthMessage("Compte créé. Vérifiez votre email pour confirmer.");
+                signupForm.reset();
+            }
+        });
+
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("loginEmail").value.trim();
+            const password = document.getElementById("loginPassword").value;
+            const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) {
+                setAuthMessage(error.message, true);
+            } else {
+                setAuthMessage("Connexion réussie.");
+                loginForm.reset();
+            }
+        });
+
+        authButtons.forEach((button) => {
+            button.addEventListener("click", async () => {
+                const provider = button.dataset.provider;
+                const redirectTo = getRedirectUrl();
+                const { error } = await supabaseClient.auth.signInWithOAuth({
+                    provider,
+                    options: redirectTo ? { redirectTo } : {}
+                });
+                if (error) setAuthMessage(error.message, true);
+            });
+        });
+    </script>
+
+</body>
+</html>

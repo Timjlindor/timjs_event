@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réservation</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Réservation & Paiement</h1>
+        <p>Réservez votre service et payez facilement par MonCash ou NatCash.</p>
+    </div>
+
+    <section class="section">
+        <h2>Étape 1 : Paiement</h2>
+        <p>Scannez un QR code ou utilisez le numéro correspondant. Ensuite, remplissez le formulaire de réservation.</p>
+        <div class="payment-grid">
+            <div class="payment-card">
+                <span class="tag">MonCash</span>
+                <h3>MonCash</h3>
+                <img class="qr-image" src="Moncash.jpeg" alt="QR code MonCash">
+                <p>Nom du compte : <strong>Lindor Elie Jovensky</strong></p>
+                <p>Numéro MonCash : <strong>+50938330001</strong></p>
+            </div>
+            <div class="payment-card">
+                <span class="tag">NatCash</span>
+                <h3>NatCash</h3>
+                <img class="qr-image" src="Natcash.jpeg" alt="QR code NatCash">
+                <p>Nom du compte : <strong>Lindor Elie Jovensky</strong></p>
+                <p>Numéro NatCash : <strong>+50940989985</strong></p>
+            </div>
+        </div>
+        <p class="album-description">Après paiement, gardez une capture d'écran pour la joindre à votre message WhatsApp.</p>
+    </section>
+
+    <section class="section">
+        <h2>Étape 2 : Formulaire de réservation</h2>
+        <form id="reservationForm">
+            <label for="fullName">Nom complet :</label>
+            <input type="text" id="fullName" name="fullName" placeholder="Votre nom complet" required>
+
+            <label for="phone">Téléphone :</label>
+            <input type="tel" id="phone" name="phone" placeholder="Votre numéro" required>
+
+            <label for="email">Email :</label>
+            <input type="email" id="email" name="email" placeholder="Votre email (optionnel)">
+
+            <label for="service">Service :</label>
+            <select id="service" name="service" required>
+                <option value="">Choisir un service</option>
+                <option value="Décoration">Décoration</option>
+                <option value="Photographie et Vidéographie">Photographie et Vidéographie</option>
+                <option value="Premiers soins">Premiers soins</option>
+                <option value="Autre">Autre</option>
+            </select>
+
+            <label for="date">Date souhaitée :</label>
+            <input type="date" id="date" name="date" required>
+
+            <label for="amount">Montant (HTG ou USD) :</label>
+            <input type="text" id="amount" name="amount" placeholder="Ex : 2500 HTG" required>
+
+            <label for="method">Moyen de paiement :</label>
+            <select id="method" name="method" required>
+                <option value="">Choisir un moyen</option>
+                <option value="MonCash">MonCash</option>
+                <option value="NatCash">NatCash</option>
+            </select>
+
+            <label for="details">Détails :</label>
+            <textarea id="details" name="details" placeholder="Lieu, thème, durée, etc." required></textarea>
+
+            <label for="paymentProof">Capture d'écran du paiement :</label>
+            <input type="file" id="paymentProof" accept="image/*" required>
+
+            <button type="submit">Envoyer la réservation</button>
+        </form>
+        <p class="album-description" style="margin-top: 10px;">La réservation est confirmée après réception du paiement.</p>
+    </section>
+
+    <div class="back-link">
+        <a href="index.html">Retour à l'accueil</a>
+    </div>
+
+    <div class="modal" id="paymentModal" aria-hidden="true">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-label="Confirmation">
+            <h3 id="modalTitle">Confirmation</h3>
+            <p id="modalText"></p>
+            <p class="album-description">Ouvrez WhatsApp et ajoutez la capture d'écran du paiement dans le message.</p>
+            <div class="modal-actions">
+                <button type="button" id="modalClose">Fermer</button>
+                <a class="btn" id="modalWhatsapp" target="_blank" rel="noopener">Ouvrir WhatsApp</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const reservationForm = document.getElementById("reservationForm");
+        const modal = document.getElementById("paymentModal");
+        const modalTitle = document.getElementById("modalTitle");
+        const modalText = document.getElementById("modalText");
+        const modalClose = document.getElementById("modalClose");
+        const modalWhatsapp = document.getElementById("modalWhatsapp");
+
+        const accounts = {
+            "MonCash": { name: "Lindor Elie Jovensky", number: "+50938330001" },
+            "NatCash": { name: "Lindor Elie Jovensky", number: "+50940989985" },
+        };
+
+        function loadWardrobe() {
+            try {
+                return JSON.parse(localStorage.getItem("paymentWardrobe") || "[]");
+            } catch {
+                return [];
+            }
+        }
+
+        function saveWardrobe(items) {
+            localStorage.setItem("paymentWardrobe", JSON.stringify(items));
+        }
+
+        function readAndResizeImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const maxSize = 700;
+                        let { width, height } = img;
+                        if (width > maxSize || height > maxSize) {
+                            if (width > height) {
+                                height = Math.round(height * (maxSize / width));
+                                width = maxSize;
+                            } else {
+                                width = Math.round(width * (maxSize / height));
+                                height = maxSize;
+                            }
+                        }
+                        const canvas = document.createElement("canvas");
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL("image/jpeg", 0.75));
+                    };
+                    img.onerror = () => resolve(reader.result);
+                    img.src = reader.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        reservationForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const fullName = document.getElementById("fullName").value.trim();
+            const phone = document.getElementById("phone").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const service = document.getElementById("service").value.trim();
+            const date = document.getElementById("date").value;
+            const amount = document.getElementById("amount").value.trim();
+            const method = document.getElementById("method").value.trim();
+            const details = document.getElementById("details").value.trim();
+            const proof = document.getElementById("paymentProof").files;
+
+            if (!proof || proof.length === 0) return;
+
+            const account = accounts[method];
+            if (!account) return;
+
+            const imageData = await readAndResizeImage(proof[0]);
+            const items = loadWardrobe();
+            items.push({
+                name: fullName,
+                method,
+                amount,
+                date,
+                image: imageData,
+                createdAt: Date.now()
+            });
+            try {
+                saveWardrobe(items);
+            } catch {
+                // stockage plein, on continue quand meme
+            }
+
+            modalTitle.textContent = `Réservation - ${method}`;
+            modalText.textContent = `Nom: ${fullName}. Téléphone: ${phone}. Service: ${service}. Date: ${date}. Montant: ${amount}. Compte: ${account.number}.`;
+            modal.classList.add("open");
+            modal.setAttribute("aria-hidden", "false");
+
+            const message = [
+                "Bonjour, je fais une réservation.",
+                `Nom: ${fullName}.`,
+                `Téléphone: ${phone}.`,
+                email ? `Email: ${email}.` : "",
+                `Service: ${service}.`,
+                `Date: ${date}.`,
+                `Montant: ${amount}.`,
+                `Moyen: ${method}.`,
+                `Détails: ${details}.`,
+                `Paiement envoyé sur: ${account.number}.`
+            ].filter(Boolean).join(" ");
+
+            modalWhatsapp.href = `https://wa.me/50931642817?text=${encodeURIComponent(message)}`;
+        });
+
+        modalClose.addEventListener("click", () => {
+            modal.classList.remove("open");
+            modal.setAttribute("aria-hidden", "true");
+        });
+
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) {
+                modal.classList.remove("open");
+                modal.setAttribute("aria-hidden", "true");
+            }
+        });
+    </script>
+</body>
+</html>
