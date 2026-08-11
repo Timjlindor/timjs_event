@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" width="1200" height="480" role="img" aria-label="Décoration de mariage">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14120f"/>
+      <stop offset="0.55" stop-color="#211e19"/>
+      <stop offset="1" stop-color="#1c1a17"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.15" cy="0.1" r="0.7">
+      <stop offset="0" stop-color="#c9a24b" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#c9a24b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="480" fill="url(#bg)"/>
+  <rect width="1200" height="480" fill="url(#glow)"/>
+  <g fill="#c9a24b" opacity="0.3">
+    <circle cx="120" cy="90" r="3"/><circle cx="220" cy="160" r="2.5"/><circle cx="80" cy="300" r="2.5"/>
+    <circle cx="1080" cy="120" r="3"/><circle cx="1010" cy="360" r="2.5"/><circle cx="1120" cy="260" r="2.5"/>
+  </g>
+  <g transform="translate(600,210)" fill="none" stroke="#c9a24b" stroke-width="5">
+    <circle cx="-40" cy="0" r="55"/>
+    <circle cx="40" cy="0" r="55"/>
+  </g>
+  <g fill="#c9a24b" transform="translate(600,210)">
+    <path d="M-40,-73 l-11,-17 h22 z"/>
+    <path d="M40,-73 l-11,-17 h22 z"/>
+  </g>
+  <text x="600" y="380" text-anchor="middle" font-family="Georgia, serif" font-size="52" fill="#f7f5f1" font-weight="bold">Cérémonie de mariage</text>
+  <text x="600" y="420" text-anchor="middle" font-family="Georgia, serif" font-size="22" fill="#c9a24b" opacity="0.9">Élégance &amp; romantisme</text>
+</svg>

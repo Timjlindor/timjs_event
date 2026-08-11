@@ -7,8 +7,22 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <nav class="site-nav">
+        <a class="brand" href="index.html"><img src="Timjs.PNG" alt="Timj">Timj Multi-Services</a>
+        <div class="nav-links">
+            <a href="index.html">Accueil</a>
+            <a href="Decoration.html">Décoration</a>
+            <a href="Photographie.html">Photographie</a>
+            <a href="Premiers-Soins.html">Premiers soins</a>
+            <a href="Snake.html">Jeu</a>
+            <a class="cta-link active" href="reservation.html">Réservation</a>
+        </div>
+    </nav>
+
+    <p class="env-warning" id="envWarning">Ce site est ouvert en local (file://). La sauvegarde des réservations dans Supabase ne fonctionnera pas tant que le site n'est pas servi en http:// ou https:// — voir CONFIGURATION-SUPABASE.md. La réservation par WhatsApp reste disponible.</p>
+
     <div class="header">
-        <h1>Réservation & Paiement</h1>
+        <h1>Réservation &amp; Paiement</h1>
         <p>Réservez votre service et payez facilement par MonCash ou NatCash.</p>
     </div>
 
@@ -74,9 +88,10 @@
             <label for="paymentProof">Capture d'écran du paiement :</label>
             <input type="file" id="paymentProof" accept="image/*" required>
 
-            <button type="submit">Envoyer la réservation</button>
+            <button type="submit" id="submitBtn">Envoyer la réservation</button>
+            <p id="submitStatus" class="auth-message inline"></p>
         </form>
-        <p class="album-description" style="margin-top: 10px;">La réservation est confirmée après réception du paiement.</p>
+        <p class="album-description spaced">La réservation est confirmée après réception du paiement.</p>
     </section>
 
     <div class="back-link">
@@ -95,8 +110,13 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/wardrobe.js"></script>
     <script>
         const reservationForm = document.getElementById("reservationForm");
+        const submitBtn = document.getElementById("submitBtn");
+        const submitStatus = document.getElementById("submitStatus");
         const modal = document.getElementById("paymentModal");
         const modalTitle = document.getElementById("modalTitle");
         const modalText = document.getElementById("modalText");
@@ -108,48 +128,34 @@
             "NatCash": { name: "Lindor Elie Jovensky", number: "+50940989985" },
         };
 
-        function loadWardrobe() {
-            try {
-                return JSON.parse(localStorage.getItem("paymentWardrobe") || "[]");
-            } catch {
-                return [];
+        async function saveReservationToSupabase({ fullName, phone, email, service, date, amount, method, details, blob }) {
+            const { data: userData } = await supabaseClient.auth.getUser();
+            const uid = userData && userData.user ? userData.user.id : null;
+            let paymentProofPath = null;
+
+            if (blob) {
+                const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}.jpg`;
+                const path = `${uid || "anonyme"}/${fileName}`;
+                const { error: uploadError } = await supabaseClient.storage
+                    .from("payment-proofs")
+                    .upload(path, blob, { contentType: "image/jpeg" });
+                if (uploadError) throw uploadError;
+                paymentProofPath = path;
             }
-        }
 
-        function saveWardrobe(items) {
-            localStorage.setItem("paymentWardrobe", JSON.stringify(items));
-        }
-
-        function readAndResizeImage(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const maxSize = 700;
-                        let { width, height } = img;
-                        if (width > maxSize || height > maxSize) {
-                            if (width > height) {
-                                height = Math.round(height * (maxSize / width));
-                                width = maxSize;
-                            } else {
-                                width = Math.round(width * (maxSize / height));
-                                height = maxSize;
-                            }
-                        }
-                        const canvas = document.createElement("canvas");
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext("2d");
-                        ctx.drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL("image/jpeg", 0.75));
-                    };
-                    img.onerror = () => resolve(reader.result);
-                    img.src = reader.result;
-                };
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
+            const { error: insertError } = await supabaseClient.from("reservations").insert({
+                user_id: uid,
+                full_name: fullName,
+                phone,
+                email: email || null,
+                service,
+                event_date: date || null,
+                amount,
+                payment_method: method,
+                details,
+                payment_proof_path: paymentProofPath
             });
+            if (insertError) throw insertError;
         }
 
         reservationForm.addEventListener("submit", async (e) => {
@@ -170,14 +176,27 @@
             const account = accounts[method];
             if (!account) return;
 
-            const imageData = await readAndResizeImage(proof[0]);
+            submitBtn.disabled = true;
+            submitStatus.textContent = "Envoi en cours...";
+            submitStatus.classList.remove("error");
+
+            let imageData;
+            try {
+                imageData = await readAndResizeImage(proof[0]);
+            } catch {
+                submitStatus.textContent = "Impossible de lire l'image, réessayez.";
+                submitStatus.classList.add("error");
+                submitBtn.disabled = false;
+                return;
+            }
+
             const items = loadWardrobe();
             items.push({
                 name: fullName,
                 method,
                 amount,
                 date,
-                image: imageData,
+                image: imageData.dataUrl,
                 createdAt: Date.now()
             });
             try {
@@ -185,6 +204,20 @@
             } catch {
                 // stockage plein, on continue quand meme
             }
+
+            try {
+                await saveReservationToSupabase({
+                    fullName, phone, email, service, date, amount, method, details,
+                    blob: imageData.blob
+                });
+                submitStatus.textContent = "Réservation enregistrée.";
+            } catch (err) {
+                console.error("Supabase reservation error:", err);
+                submitStatus.textContent = "Réservation notée localement (Supabase indisponible). Continuez via WhatsApp.";
+                submitStatus.classList.add("error");
+            }
+
+            submitBtn.disabled = false;
 
             modalTitle.textContent = `Réservation - ${method}`;
             modalText.textContent = `Nom: ${fullName}. Téléphone: ${phone}. Service: ${service}. Date: ${date}. Montant: ${amount}. Compte: ${account.number}.`;
@@ -219,5 +252,6 @@
             }
         });
     </script>
+    <script src="premium.js" defer></script>
 </body>
 </html>
