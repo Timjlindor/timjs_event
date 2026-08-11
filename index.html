@@ -8,29 +8,70 @@
 </head>
 <body>
 
+    <div class="intro-overlay" id="introOverlay">
+        <video id="introVideo" src="Intro.mp4" poster="images/intro-poster.jpg" muted autoplay playsinline></video>
+        <button type="button" class="intro-skip" id="introSkip">Passer &rsaquo;</button>
+    </div>
+
+    <nav class="site-nav">
+        <a class="brand" href="index.html"><img src="Timjs.PNG" alt="Timj">Timj Multi-Services</a>
+        <div class="nav-links">
+            <a class="active" href="index.html">Accueil</a>
+            <a href="Decoration.html">Décoration</a>
+            <a href="Photographie.html">Photographie</a>
+            <a href="Premiers-Soins.html">Premiers soins</a>
+            <a href="Snake.html">Jeu</a>
+            <a class="cta-link" href="reservation.html">Réservation</a>
+        </div>
+    </nav>
+
+    <p class="env-warning" id="envWarning">Ce site est ouvert en local (file://). La connexion Supabase ne fonctionnera pas tant que le site n'est pas servi en http:// ou https:// — voir CONFIGURATION-SUPABASE.md.</p>
+
     <div class="header">
         <h1>Bienvenue sur ma page web</h1>
-        <img src="LOGO NOIR.png" alt="Timj">
+        <img src="Timjs.PNG" alt="Timj">
     <p>Nous offrons plusieurs types de services.</p>
 
     </div>
     
     
 
-    <div class="container"> 
-        <ol>
-        <li><a href="Decoration.html"> Décoration</a></li>
-        <li><a href="Photographie.html"> Photographie et Vidéographie</a></li>
-        <li><a href="Premiers-Soins.html"> Premiers soins</a></li>
-        <li><a href="reservation.html"> Réservation</a></li>
-        <li><a href="Snake.html"> Jeu Snake</a></li>
-    </ol></div>
+    <section class="section">
+        <h2>Nos services</h2>
+        <p>Découvrez ce que nous proposons et réservez en quelques clics.</p>
+        <div class="grid grid-3">
+            <a class="card" href="Decoration.html">
+                <h3>Décoration</h3>
+                <p>Mariage, anniversaire, baby shower, baptême et plus encore.</p>
+            </a>
+            <a class="card" href="Photographie.html">
+                <h3>Photographie &amp; Vidéographie</h3>
+                <p>Studio, plein air, mariage et événementiel.</p>
+            </a>
+            <a class="card" href="Premiers-Soins.html">
+                <h3>Premiers soins</h3>
+                <p>Informations et gestes essentiels de santé.</p>
+            </a>
+            <a class="card" href="reservation.html">
+                <h3>Réservation</h3>
+                <p>Réservez et payez par MonCash ou NatCash.</p>
+            </a>
+            <a class="card" href="Snake.html">
+                <h3>Jeu Snake</h3>
+                <p>Une pause détente entre deux visites.</p>
+            </a>
+        </div>
+    </section>
 
 
     <section class="section" id="auth">
         <h2>Créer un compte</h2>
         <p>Connectez-vous pour gérer vos réservations et suivre vos paiements.</p>
-        <div class="auth-grid">
+        <div class="account-banner" id="accountBanner">
+            <p>Connecté en tant que <span id="accountEmail"></span><span>Vos réservations sont liées à ce compte.</span></p>
+            <button type="button" id="logoutBtn">Se déconnecter</button>
+        </div>
+        <div class="auth-grid" id="authGrid">
             <div class="auth-card">
                 <h3>Inscription manuelle</h3>
                 <form id="signupForm" class="auth-form">
@@ -80,22 +121,52 @@
 
 
 
-    <div class="header">
-        <p>Tous droits réservés à la Famille Lindor</p>
-    </div>
+    <footer class="site-footer">
+        <p>Timj Multi-Services — Suivez-moi sur les réseaux sociaux</p>
+        <div class="social-links">
+            <a href="https://www.facebook.com/Lindorkiki22" target="_blank" rel="noopener">Facebook</a>
+            <a href="https://www.tiktok.com/@timjsphotograpy" target="_blank" rel="noopener">TikTok</a>
+            <a href="https://youtube.com/@timjs2021?si=CJsM3ynGVBMxIUPc" target="_blank" rel="noopener">YouTube</a>
+            <a href="https://www.instagram.com/timjsphotography?igsh=bWY2Z3docmltZG56&utm_source=qr" target="_blank" rel="noopener">Instagram</a>
+            <a href="https://wa.me/c/50931642817" target="_blank" rel="noopener">WhatsApp</a>
+        </div>
+        <p class="footer-meta">Tous droits réservés à la Famille Lindor</p>
+    </footer>
+
+    <script>
+        (function () {
+            const overlay = document.getElementById("introOverlay");
+            const video = document.getElementById("introVideo");
+            const skip = document.getElementById("introSkip");
+            if (!overlay) return;
+
+            function hideIntro() {
+                overlay.classList.add("hide");
+                setTimeout(() => overlay.remove(), 700);
+            }
+
+            // Ne jouer qu'une fois par session
+            let seen = false;
+            try { seen = sessionStorage.getItem("introSeen") === "1"; } catch (e) {}
+            if (seen) { overlay.remove(); return; }
+            try { sessionStorage.setItem("introSeen", "1"); } catch (e) {}
+
+            skip.addEventListener("click", hideIntro);
+            video.addEventListener("ended", hideIntro);
+            video.addEventListener("error", () => overlay.remove());
+            // Sécurité : si la vidéo ne se charge pas, on retire l'intro
+            setTimeout(() => { if (video.readyState === 0) overlay.remove(); }, 2500);
+            const p = video.play();
+            if (p && p.catch) p.catch(() => {});
+        })();
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/wardrobe.js"></script>
     <script>
         const wardrobeGrid = document.getElementById("wardrobe-grid");
         const wardrobeEmpty = document.getElementById("wardrobe-empty");
-
-        function loadWardrobe() {
-            try {
-                return JSON.parse(localStorage.getItem("paymentWardrobe") || "[]");
-            } catch {
-                return [];
-            }
-        }
 
         function renderWardrobe() {
             const items = loadWardrobe().sort((a, b) => b.createdAt - a.createdAt);
@@ -129,19 +200,47 @@
 
         renderWardrobe();
 
-        const SUPABASE_URL = "https://zcgwkvuyxosxfyxwmfim.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjZ3drdnV5eG9zeGZ5eHdtZmltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3NzAyMTksImV4cCI6MjA4NjM0NjIxOX0.x1VNiNBu1N8dshlgwTBBW2_GhUtovSnjQs_mYZuLUgw";
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
         const authMessage = document.getElementById("authMessage");
         const signupForm = document.getElementById("signupForm");
         const loginForm = document.getElementById("loginForm");
         const authButtons = document.querySelectorAll(".auth-buttons button");
+        const authGrid = document.getElementById("authGrid");
+        const accountBanner = document.getElementById("accountBanner");
+        const accountEmail = document.getElementById("accountEmail");
+        const logoutBtn = document.getElementById("logoutBtn");
 
         function setAuthMessage(text, isError = false) {
             authMessage.textContent = text;
             authMessage.classList.toggle("error", isError);
         }
+
+        function renderSession(session) {
+            if (session && session.user) {
+                accountEmail.textContent = session.user.email || "compte connecté";
+                accountBanner.classList.add("visible");
+                authGrid.classList.add("hidden");
+            } else {
+                accountBanner.classList.remove("visible");
+                authGrid.classList.remove("hidden");
+            }
+        }
+
+        supabaseClient.auth.getSession().then(({ data }) => {
+            renderSession(data.session);
+        });
+
+        supabaseClient.auth.onAuthStateChange((_event, session) => {
+            renderSession(session);
+        });
+
+        logoutBtn.addEventListener("click", async () => {
+            const { error } = await supabaseClient.auth.signOut();
+            if (error) {
+                setAuthMessage(error.message, true);
+            } else {
+                setAuthMessage("Déconnexion réussie.");
+            }
+        });
 
         function getRedirectUrl() {
             if (location.protocol === "http:" || location.protocol === "https:") {
@@ -198,6 +297,7 @@
             });
         });
     </script>
+    <script src="premium.js" defer></script>
 
 </body>
 </html>

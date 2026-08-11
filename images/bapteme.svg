@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" width="1200" height="480" role="img" aria-label="Décoration de baptême">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14120f"/>
+      <stop offset="0.55" stop-color="#211e19"/>
+      <stop offset="1" stop-color="#1c1a17"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.15" cy="0.1" r="0.7">
+      <stop offset="0" stop-color="#c9a24b" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#c9a24b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="480" fill="url(#bg)"/>
+  <rect width="1200" height="480" fill="url(#glow)"/>
+  <g fill="#c9a24b" opacity="0.3">
+    <circle cx="160" cy="120" r="3"/><circle cx="1040" cy="140" r="3"/><circle cx="980" cy="350" r="2.5"/>
+    <circle cx="240" cy="350" r="2.5"/>
+  </g>
+  <g transform="translate(600,200)" fill="none" stroke="#c9a24b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-70,10 q30,-70 70,-50 q-10,20 10,30 q30,-8 40,20 q-40,26 -80,10 q-30,-4 -40,-10z"/>
+    <path d="M40,10 q28,6 44,-6"/>
+  </g>
+  <circle cx="548" cy="204" r="4" fill="#c9a24b"/>
+  <text x="600" y="380" text-anchor="middle" font-family="Georgia, serif" font-size="52" fill="#f7f5f1" font-weight="bold">Baptême</text>
+  <text x="600" y="420" text-anchor="middle" font-family="Georgia, serif" font-size="22" fill="#c9a24b" opacity="0.9">Délicat &amp; lumineux</text>
+</svg>

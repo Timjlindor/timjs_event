@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" width="1200" height="420" role="img" aria-label="Décoration événementielle">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14120f"/>
+      <stop offset="0.55" stop-color="#211e19"/>
+      <stop offset="1" stop-color="#1c1a17"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.15" cy="0.1" r="0.7">
+      <stop offset="0" stop-color="#c9a24b" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#c9a24b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="420" fill="url(#bg)"/>
+  <rect width="1200" height="420" fill="url(#glow)"/>
+  <g fill="#c9a24b" opacity="0.35">
+    <circle cx="150" cy="100" r="3"/><circle cx="1060" cy="120" r="3"/><circle cx="980" cy="320" r="2.5"/>
+    <circle cx="230" cy="330" r="2.5"/><circle cx="320" cy="140" r="2"/><circle cx="900" cy="110" r="2"/>
+  </g>
+  <g transform="translate(600,190)" fill="none" stroke="#c9a24b" stroke-width="4" stroke-linecap="round">
+    <path d="M-160,60 Q-160,-70 0,-70 Q160,-70 160,60"/>
+  </g>
+  <g fill="#c9a24b" transform="translate(600,190)">
+    <circle cx="-160" cy="60" r="6"/>
+    <circle cx="0" cy="-70" r="7"/>
+    <circle cx="160" cy="60" r="6"/>
+  </g>
+  <text x="600" y="320" text-anchor="middle" font-family="Georgia, serif" font-size="52" fill="#f7f5f1" font-weight="bold">Décoration événementielle</text>
+  <text x="600" y="360" text-anchor="middle" font-family="Georgia, serif" font-size="22" fill="#c9a24b" opacity="0.9">Chaque occasion mérite sa magie</text>
+</svg>

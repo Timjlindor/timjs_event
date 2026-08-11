@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" width="1200" height="480" role="img" aria-label="Décoration de graduation">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14120f"/>
+      <stop offset="0.55" stop-color="#211e19"/>
+      <stop offset="1" stop-color="#1c1a17"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.15" cy="0.1" r="0.7">
+      <stop offset="0" stop-color="#c9a24b" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#c9a24b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="480" fill="url(#bg)"/>
+  <rect width="1200" height="480" fill="url(#glow)"/>
+  <g fill="#c9a24b" opacity="0.3">
+    <circle cx="150" cy="110" r="3"/><circle cx="1040" cy="130" r="3"/><circle cx="990" cy="360" r="2.5"/>
+  </g>
+  <g transform="translate(600,195)" fill="none" stroke="#c9a24b" stroke-width="4" stroke-linejoin="round">
+    <polygon points="0,-40 90,-6 0,28 -90,-6"/>
+    <path d="M-40,4 v34 q40,22 80,0 v-34"/>
+    <line x1="90" y1="-6" x2="90" y2="46" stroke-linecap="round"/>
+  </g>
+  <circle cx="690" cy="245" r="6" fill="#c9a24b"/>
+  <text x="600" y="380" text-anchor="middle" font-family="Georgia, serif" font-size="52" fill="#f7f5f1" font-weight="bold">Graduation</text>
+  <text x="600" y="420" text-anchor="middle" font-family="Georgia, serif" font-size="22" fill="#c9a24b" opacity="0.9">Fierté &amp; réussite</text>
+</svg>

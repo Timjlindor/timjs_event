@@ -5,57 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jeu Snake</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        .game-wrap {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 8px;
-            padding: 16px;
-            max-width: 520px;
-            margin: 0 auto;
-        }
-        .game-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        .status {
-            font-size: 14px;
-        }
-        canvas {
-            display: block;
-            width: 100%;
-            height: auto;
-            background: #f3f3f3;
-            border: 1px solid #333;
-        }
-        .controls {
-            display: grid;
-            grid-template-columns: 60px 60px 60px;
-            grid-template-rows: 40px 40px 40px;
-            gap: 6px;
-            justify-content: center;
-            margin: 12px 0;
-        }
-        .controls button {
-            padding: 6px;
-            font-size: 14px;
-        }
-        .actions {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-        }
-        .actions button {
-            padding: 6px 12px;
-        }
-        .back-link {
-            margin-top: 12px;
-            text-align: center;
-        }
-    </style>
 </head>
 <body>
+    <nav class="site-nav">
+        <a class="brand" href="index.html"><img src="Timjs.PNG" alt="Timj">Timj Multi-Services</a>
+        <div class="nav-links">
+            <a href="index.html">Accueil</a>
+            <a href="Decoration.html">Décoration</a>
+            <a href="Photographie.html">Photographie</a>
+            <a href="Premiers-Soins.html">Premiers soins</a>
+            <a class="active" href="Snake.html">Jeu</a>
+            <a class="cta-link" href="reservation.html">Réservation</a>
+        </div>
+    </nav>
+
     <div class="header">
         <h1>Jeu Snake</h1>
         <p>Utilisez les flèches ou WASD pour jouer</p>
@@ -89,5 +52,6 @@
     </div>
 
     <script src="snake.js"></script>
+    <script src="premium.js" defer></script>
 </body>
 </html>
