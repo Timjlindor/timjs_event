@@ -98,9 +98,10 @@ Le déclenchement est à **11:00 UTC** (`.github/workflows/daily-reel.yml`), soi
 
 ## 7. Personnaliser
 
-- **Photos concernées :** tout ce qui est dans `Photographie/` (rotation quotidienne automatique).
+- **Photos :** le reel prend **6 photos, une par catégorie** de `Photographie/` (Baptême, Graduation, Plein air, Mariage, Studio, Événementiel), en rotation quotidienne.
+- **Musique :** l'instrumentale `audio/timj-reels-instrumental.mp3` est la bande-son. La **durée du reel s'aligne automatiquement sur la durée de l'audio** (chaque photo occupe `durée_audio ÷ 6`). Pour changer de musique, remplacez ce fichier (ou définissez la variable `AUDIO_PATH`).
 - **Légendes & hashtags :** modifiables en haut de `automation/daily-reel.mjs` (objets `HASHTAGS` et `LEGENDES`).
-- **Durée / style de la vidéo :** paramètre `-t 8` et le filtre `zoompan` dans la fonction `makeReel`.
+- **Style de la vidéo :** filtre `zoompan` dans la fonction `makeReel`.
 
 ---
 

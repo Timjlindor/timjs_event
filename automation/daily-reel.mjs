@@ -13,14 +13,17 @@
 // (Settings → Secrets and variables → Actions). Voir AUTOMATION-RESEAUX.md.
 // =============================================================================
 
-import { readdirSync, statSync, readFileSync } from "node:fs";
+import { readdirSync, statSync, readFileSync, mkdtempSync, writeFileSync, rmSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { join } from "node:path";
+import { tmpdir } from "node:os";
 
 const env = process.env;
 const SITE_BASE_URL = env.SITE_BASE_URL || "https://timjlindor.github.io/timjs_event";
 const PHOTO_ROOT = "Photographie";
 const OUT_VIDEO = "reel.mp4";
+const AUDIO_PATH = env.AUDIO_PATH || "audio/timj-reels-instrumental.mp3";
+const FPS = 30;
 
 // --- Petit utilitaire de log lisible dans les logs GitHub Actions -------------
 const log = (...a) => console.log("•", ...a);
@@ -29,22 +32,30 @@ const warn = (...a) => console.warn("⚠", ...a);
 // =============================================================================
 // 1. Choisir la photo du jour (rotation déterministe)
 // =============================================================================
-function listPhotos(dir) {
-    const out = [];
-    for (const name of readdirSync(dir)) {
-        if (name.startsWith(".")) continue; // ignore .DS_Store et cachés
-        const full = join(dir, name);
-        const st = statSync(full);
-        if (st.isDirectory()) out.push(...listPhotos(full));
-        else if (/\.(jpe?g|png)$/i.test(name)) out.push(full);
-    }
-    return out;
+// Sous-dossiers = catégories (Bapteme, Photo Mariage, Photo Studio, …).
+function listCategoryDirs(root) {
+    return readdirSync(root)
+        .map((n) => join(root, n))
+        .filter((p) => { try { return statSync(p).isDirectory(); } catch { return false; } })
+        .sort();
 }
 
-function pickPhotoOfTheDay(photos) {
-    const sorted = [...photos].sort();
-    const daysSinceEpoch = Math.floor(Date.now() / 86_400_000);
-    return sorted[daysSinceEpoch % sorted.length];
+function photosIn(dir) {
+    return readdirSync(dir)
+        .filter((n) => !n.startsWith(".") && /\.(jpe?g|png)$/i.test(n))
+        .sort()
+        .map((n) => join(dir, n));
+}
+
+// UNE photo par catégorie (rotation quotidienne), 6 au total.
+function pickOnePerCategory(root) {
+    const day = Math.floor(Date.now() / 86_400_000);
+    const picks = [];
+    for (const dir of listCategoryDirs(root)) {
+        const ph = photosIn(dir);
+        if (ph.length) picks.push(ph[day % ph.length]);
+    }
+    return picks.slice(0, 6);
 }
 
 // Déduit le style à partir du dossier, pour des hashtags pertinents.
@@ -88,39 +99,67 @@ const LEGENDES = {
     photo: "📷 Capturons ensemble vos plus beaux moments.",
 };
 
-function buildCaption(category) {
-    const intro = LEGENDES[category] || LEGENDES.photo;
-    const tags = [...(HASHTAGS[category] || []), ...HASHTAGS.commun];
-    // Dédoublonne en gardant l'ordre
-    const uniq = [...new Set(tags)];
+function buildCaption(categories) {
+    const tags = [];
+    for (const c of categories) tags.push(...(HASHTAGS[c] || []));
+    tags.push(...HASHTAGS.commun);
+    // Dédoublonne, puis limite à 30 (plafond Instagram).
+    const uniq = [...new Set(tags)].slice(0, 30);
+    const intro = "✨ Décoration · Photographie · Événementiel — on sublime vos plus beaux moments.";
     const cta = "\n\n📅 Réservez votre séance : " + SITE_BASE_URL + "/reservation.html" +
         "\n📞 WhatsApp : +509 31 64 28 17";
     return `${intro}${cta}\n\n${uniq.join(" ")}`;
 }
 
 // =============================================================================
-// 3. Fabriquer le reel vidéo (ffmpeg) — vertical 1080x1920, ~8s, zoom doux
+// 3. Fabriquer le reel vidéo (ffmpeg) — 6 photos, bande-son, durée = audio
 // =============================================================================
-function makeReel(photoPath, outPath) {
-    log("Génération du reel à partir de :", photoPath);
-    const args = [
-        "-y",
-        "-loop", "1", "-i", photoPath,
-        "-f", "lavfi", "-i", "anullsrc=channel_layout=stereo:sample_rate=44100",
-        "-t", "8",
-        "-filter_complex",
-        // On agrandit à 3x la sortie puis zoompan redescend en 1080x1920 : zoom fluide.
-        "[0:v]scale=3240:5760:force_original_aspect_ratio=increase,crop=3240:5760," +
-        "zoompan=z='min(zoom+0.0006,1.18)':d=240:s=1080x1920:fps=30," +
-        "format=yuv420p[v]",
-        "-map", "[v]", "-map", "1:a",
-        "-c:v", "libx264", "-preset", "medium", "-profile:v", "high", "-level", "4.0",
-        "-pix_fmt", "yuv420p", "-r", "30",
-        "-c:a", "aac", "-b:a", "128k", "-shortest",
-        "-movflags", "+faststart",
-        outPath,
-    ];
-    execFileSync("ffmpeg", args, { stdio: "inherit" });
+function mediaDuration(path) {
+    const out = execFileSync("ffprobe", [
+        "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", path,
+    ]).toString().trim();
+    return parseFloat(out) || 30;
+}
+
+function makeReel(photos, audioPath, outPath) {
+    const n = photos.length;
+    const dur = mediaDuration(audioPath);          // durée de l'instrumentale
+    const seg = dur / n;                            // temps par photo
+    const segFrames = Math.max(1, Math.round(seg * FPS));
+    log(`Reel : ${n} photos · audio ${dur.toFixed(1)}s → ${seg.toFixed(2)}s/photo`);
+
+    const tmp = mkdtempSync(join(tmpdir(), "reel-"));
+    try {
+        // 1) Un clip vertical (zoom doux) par photo, tous à la même durée.
+        const clips = photos.map((photo, i) => {
+            const clip = join(tmp, `seg${i}.mp4`);
+            execFileSync("ffmpeg", [
+                "-y", "-loop", "1", "-i", photo, "-t", seg.toFixed(3),
+                "-vf",
+                "scale=3240:5760:force_original_aspect_ratio=increase,crop=3240:5760," +
+                `zoompan=z='min(zoom+0.0006,1.15)':d=${segFrames}:s=1080x1920:fps=${FPS},format=yuv420p`,
+                "-c:v", "libx264", "-preset", "medium", "-pix_fmt", "yuv420p", "-r", String(FPS),
+                clip,
+            ], { stdio: "inherit" });
+            return clip;
+        });
+
+        // 2) Assemblage des clips + ajout de l'instrumentale, coupé à la durée de l'audio.
+        const listFile = join(tmp, "list.txt");
+        writeFileSync(listFile, clips.map((c) => `file '${c}'`).join("\n"));
+        execFileSync("ffmpeg", [
+            "-y",
+            "-f", "concat", "-safe", "0", "-i", listFile,
+            "-i", audioPath,
+            "-map", "0:v", "-map", "1:a",
+            "-c:v", "libx264", "-preset", "medium", "-profile:v", "high", "-pix_fmt", "yuv420p",
+            "-c:a", "aac", "-b:a", "192k",
+            "-t", dur.toFixed(3), "-movflags", "+faststart",
+            outPath,
+        ], { stdio: "inherit" });
+    } finally {
+        rmSync(tmp, { recursive: true, force: true });
+    }
     log("Reel généré :", outPath);
 }
 
@@ -293,15 +332,14 @@ async function postToYouTube(filePath, caption, category) {
 // Orchestration
 // =============================================================================
 (async () => {
-    const photos = listPhotos(PHOTO_ROOT);
+    const photos = pickOnePerCategory(PHOTO_ROOT);
     if (photos.length === 0) throw new Error("Aucune photo trouvée dans " + PHOTO_ROOT);
-    const photo = pickPhotoOfTheDay(photos);
-    const category = categoryOf(photo);
-    const caption = buildCaption(category);
-    const photoUrl = `${SITE_BASE_URL}/${encodeURI(photo)}`;
-    log(`Photo du jour : ${photo}  (style : ${category})`);
+    const categories = photos.map(categoryOf);
+    const caption = buildCaption(categories);
+    const photoUrl = `${SITE_BASE_URL}/${encodeURI(photos[0])}`;
+    log(`Photos du jour (${photos.length}) :\n  - ` + photos.join("\n  - "));
 
-    makeReel(photo, OUT_VIDEO);
+    makeReel(photos, AUDIO_PATH, OUT_VIDEO);
     const videoUrl = await uploadToSupabase(OUT_VIDEO);
 
     // Site (toujours, si Supabase configuré)
@@ -313,7 +351,7 @@ async function postToYouTube(filePath, caption, category) {
         () => postToInstagram(videoUrl, caption),
         () => postToFacebook(videoUrl, caption),
         () => postToTikTok(videoUrl, caption),
-        () => postToYouTube(OUT_VIDEO, caption, category),
+        () => postToYouTube(OUT_VIDEO, caption, categories[0]),
     ]) {
         try { await task(); } catch (e) { warn("Erreur réseau :", e.message); }
     }

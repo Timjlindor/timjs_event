@@ -4,3 +4,8 @@
 # Supabase CLI (dossiers temporaires / locaux)
 supabase/.temp/
 supabase/.branches/
+
+# Vidéo générée par l'automatisation (reconstruite à chaque exécution)
+reel.mp4
+# Version WAV volumineuse de l'instrumentale (on garde seulement le .mp3)
+audio/*.wav
