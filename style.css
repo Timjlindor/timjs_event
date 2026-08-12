@@ -1647,12 +1647,12 @@ canvas {
    ✨ Arrière-plan animé & effets 3D (ajout)
    ========================================================= */
 
-/* ----- Arrière-plan : sobre, chic, aux couleurs de la marque ----- */
+/* ----- Arrière-plan : image plein écran (fixe) + léger voile ----- */
+/* On rend le fond du body transparent pour laisser voir l'image ci-dessous */
 body {
     background: transparent;
 }
 
-/* Base crème + lueurs dorées très subtiles (fixe) */
 body::before {
     content: "";
     position: fixed;
@@ -1660,13 +1660,11 @@ body::before {
     z-index: -2;
     pointer-events: none;
     background:
-        radial-gradient(62% 52% at 10% -4%, rgba(201, 162, 75, 0.12), transparent 60%),
-        radial-gradient(55% 50% at 102% 6%, rgba(154, 122, 69, 0.09), transparent 60%),
-        radial-gradient(72% 60% at 50% 104%, rgba(241, 230, 207, 0.40), transparent 66%),
-        var(--bg);
+        linear-gradient(180deg, rgba(247, 245, 241, 0.34), rgba(247, 245, 241, 0.48)),
+        url("css/fondjpeg.jpeg") center center / cover no-repeat;
+    animation: bgZoom 34s ease-in-out infinite alternate;
 }
 
-/* Voile de profondeur discret sur les bords */
 body::after {
     content: "";
     position: fixed;
@@ -1674,7 +1672,12 @@ body::after {
     z-index: -1;
     pointer-events: none;
     background:
-        radial-gradient(140% 120% at 50% -12%, transparent 64%, rgba(28, 26, 23, 0.05) 100%);
+        radial-gradient(135% 115% at 50% -8%, transparent 60%, rgba(28, 26, 23, 0.14) 100%);
+}
+
+@keyframes bgZoom {
+    from { transform: scale(1);    }
+    to   { transform: scale(1.08); }
 }
 
 /* ----- Perspective des conteneurs pour la 3D ----- */
