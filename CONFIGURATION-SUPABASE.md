@@ -130,6 +130,129 @@ Après ça :
 
 ---
 
+## 7. Publier automatiquement les posts YouTube / Facebook / Instagram / TikTok
+
+La page d'accueil peut republier automatiquement tes nouvelles vidéos et
+publications dans le fil "Dernières annonces", sans que tu fasses quoi que
+ce soit de plus une fois que c'est branché. Ça fonctionne par
+**vérification périodique** (toutes les 20 minutes environ), pas en temps
+réel instantané.
+
+C'est la partie la plus technique de la configuration. Prends ton temps,
+fais une plateforme à la fois, et n'hésite pas à me redemander de l'aide à
+n'importe quelle étape.
+
+### 7.0 Ce qu'il te faut avant de commencer
+
+- Le **CLI Supabase** installé sur ton ordinateur, pour déployer les deux
+  fonctions du dossier `supabase/functions/` :
+  ```bash
+  npm install -g supabase
+  supabase login
+  supabase link --project-ref zcgwkvuyxosxfyxwmfim
+  ```
+- Ta **clé service_role** (Project Settings → API → `service_role` —
+  différente de la clé `anon` publique, celle-ci ne doit **jamais**
+  apparaître dans le code du site).
+
+### 7.1 YouTube (le plus simple)
+
+1. Va sur https://console.cloud.google.com → crée un projet.
+2. **APIs & Services → Library** → cherche "YouTube Data API v3" → **Enable**.
+3. **APIs & Services → Credentials → Create Credentials → API key**. Copie
+   la clé.
+4. Récupère l'ID de ta chaîne YouTube : va sur ta chaîne → **À propos** →
+   l'URL ou le bouton "Partager la chaîne" donne un ID du type `UCxxxxxxxx`.
+
+### 7.2 Facebook (Page) et Instagram (même app Meta)
+
+1. Ton compte Instagram doit être un compte **Professionnel ou Créateur**,
+   lié à ta **Page Facebook** (Paramètres Instagram → Compte → Passer à un
+   compte professionnel, puis lie-le à la Page dans les paramètres de la
+   Page Facebook).
+2. Va sur https://developers.facebook.com → **Mes Apps → Créer une app** →
+   type "Entreprise".
+3. Ajoute le produit **Graph API Explorer** (dans le tableau de bord de
+   l'app, section Outils).
+4. Dans le **Graph API Explorer** : sélectionne ton app, ta Page, coche les
+   permissions `pages_read_engagement`, `pages_show_list`,
+   `instagram_basic`. Génère un **User Access Token**, puis clique sur
+   "Générer un token d'accès longue durée" (ou utilise l'outil "Access
+   Token Debugger" pour l'étendre à 60 jours).
+5. Avec ce token, appelle `GET /me/accounts` pour récupérer l'**ID de ta
+   Page** et son **token d'accès Page** (les tokens de Page issus d'un
+   token utilisateur longue durée n'expirent pas tant que tu ne révoques
+   pas l'accès).
+6. Appelle `GET /{page-id}?fields=instagram_business_account` avec le token
+   de Page pour récupérer l'**ID du compte Instagram Business** lié.
+
+Tu obtiens : `FB_PAGE_ID`, `FB_PAGE_ACCESS_TOKEN`, `IG_USER_ID`.
+
+### 7.3 TikTok (le plus exigeant)
+
+1. Va sur https://developers.tiktok.com → crée un compte développeur →
+   **Manage apps → Create app**.
+2. Ajoute le produit **Login Kit**, avec les scopes `user.info.basic` et
+   `video.list`.
+3. Dans les paramètres de l'app, ajoute une **Redirect URI** : ce sera
+   l'URL de la fonction `tiktok-oauth-callback` une fois déployée (étape
+   7.4), du type :
+   `https://zcgwkvuyxosxfyxwmfim.supabase.co/functions/v1/tiktok-oauth-callback`
+4. Note le **Client Key** et le **Client Secret** de l'app.
+
+### 7.4 Déployer les fonctions et configurer les secrets
+
+```bash
+supabase functions deploy sync-social-posts --no-verify-jwt
+supabase functions deploy tiktok-oauth-callback --no-verify-jwt
+
+supabase secrets set \
+  YOUTUBE_API_KEY=xxx \
+  YOUTUBE_CHANNEL_ID=UCxxxxxxxx \
+  FB_PAGE_ID=xxx \
+  FB_PAGE_ACCESS_TOKEN=xxx \
+  IG_USER_ID=xxx \
+  TIKTOK_CLIENT_KEY=xxx \
+  TIKTOK_CLIENT_SECRET=xxx \
+  TIKTOK_REDIRECT_URI=https://zcgwkvuyxosxfyxwmfim.supabase.co/functions/v1/tiktok-oauth-callback
+```
+
+(Omets les variables d'une plateforme que tu ne veux pas connecter tout de
+suite — la fonction l'ignore simplement, sans erreur.)
+
+### 7.5 Connecter TikTok (une seule fois)
+
+Remplace `<CLIENT_KEY>` et ouvre ce lien dans ton navigateur, connecté à ton
+compte TikTok :
+
+```
+https://www.tiktok.com/v2/auth/authorize/?client_key=<CLIENT_KEY>&scope=user.info.basic,video.list&response_type=code&redirect_uri=https%3A%2F%2Fzcgwkvuyxosxfyxwmfim.supabase.co%2Ffunctions%2Fv1%2Ftiktok-oauth-callback&state=setup
+```
+
+Autorise l'app. Tu dois voir "TikTok connecté avec succès". C'est fait une
+fois pour toutes (la fonction renouvelle elle-même l'accès ensuite).
+
+### 7.6 Exécuter le schéma et activer la planification
+
+1. Si ce n'est pas déjà fait, exécute `supabase/schema.sql` en entier dans
+   le **SQL Editor** (sections 3 et 4) — ça crée les tables `social_posts`
+   et `platform_tokens`.
+2. Dans **Database → Extensions**, active **pg_cron** et **pg_net**.
+3. Dans le **SQL Editor**, décommente et exécute le bloc `cron.schedule(...)`
+   de la section 4 de `supabase/schema.sql`, en remplaçant `<ANON_KEY>` par
+   ta clé anon.
+
+### 7.7 Tester
+
+Dans **Edge Functions → sync-social-posts**, clique sur "Invoke" (ou
+`curl -X POST https://zcgwkvuyxosxfyxwmfim.supabase.co/functions/v1/sync-social-posts`)
+pour déclencher une synchronisation immédiate, puis vérifie
+**Table Editor → social_posts** : tes dernières publications doivent
+apparaître. Elles s'affichent automatiquement dans le fil de la page
+d'accueil, avec un badge indiquant la plateforme d'origine.
+
+---
+
 ## Récapitulatif
 
 | Fonction              | Action requise                                   |
@@ -141,8 +264,11 @@ Après ça :
 | Facebook              | Créer une app + coller App ID/Secret             |
 | Apple                 | Compte développeur payant (sinon retirer le bouton) |
 | Réservations          | Exécuter `supabase/schema.sql` dans le SQL Editor |
+| Annonces (page d'accueil) | Compte admin `lindorelie23@gmail.com` + schéma exécuté |
+| Sync YouTube/FB/IG/TikTok | Clés API des 4 plateformes + déployer les 2 Edge Functions + pg_cron |
 
 Une fois les URLs (section 1) et l'email (section 2) configurés, ta page de
 connexion marche. Google et Facebook s'ajoutent quand tu veux. Une fois le
 schéma (section 6) exécuté, les réservations et preuves de paiement
-apparaissent dans ton dashboard Supabase.
+apparaissent dans ton dashboard Supabase. La section 7 (optionnelle et plus
+longue) active la republication automatique des réseaux sociaux.

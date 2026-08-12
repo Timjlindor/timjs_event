@@ -1,85 +1,23 @@
-# 🎉 Timj’s Event / Timj’s Photography
+# Timj Multi-Services
 
-Bienvenue sur le dépôt officiel du site web **Timj’s Event**, une plateforme dédiée aux services événementiels et à la photographie professionnelle.
+Site web statique pour Timj Multi-Services : décoration événementielle, photographie/vidéographie, premiers soins, et réservation en ligne (paiement MonCash / NatCash).
 
-Welcome to the official repository of **Timj’s Event**, a platform for event services and professional photography.
+## Structure
 
-🌐 Site en ligne / Live website :  
-👉 https://timjlindor.github.io/timjs_event/
+- `index.html` — page d'accueil
+- `Decoration.html`, `Photographie.html`, `Premiers-Soins.html`, `reservation.html` — pages de services
+- `anniversaire.html`, `bapteme.html`, `graduation.html`, `mariage.html`, `promesse.html`, `romantique.html`, `shower.html` — pages thématiques de décoration
+- `Snake.html` / `snake.js` — mini-jeu Snake
+- `style.css` — styles du site
+- `images/`, `Photographie/` — ressources visuelles
+- `supabase/` — configuration Supabase (voir [CONFIGURATION-SUPABASE.md](CONFIGURATION-SUPABASE.md))
 
----
+## Lancer le site en local
 
-## 📌 À propos du projet / About the project
+Le site utilise Supabase, qui nécessite d'être servi via `http://` ou `https://` (le mode `file://` ne fonctionne pas). Par exemple :
 
-🇫🇷  
-Ce site présente une variété de services :
-- 📸 Photographie (mariages, événements, portraits)
-- 🎈 Décoration & organisation d’événements
-- 🩺 Premiers soins & sécurité événementielle
-- 🎮 Mini-jeu Snake intégré
+```bash
+python3 -m http.server 8000
+```
 
-🇺🇸  
-This website showcases several services:
-- 📸 Photography (weddings, events, portraits)
-- 🎈 Event decoration & planning
-- 🩺 First aid & event safety
-- 🎮 Built-in Snake mini-game
-
----
-
-## 🛠️ Technologies / Tech Stack
-
-- HTML5  
-- CSS3  
-- JavaScript  
-- GitHub Pages (hosting)
-
----
-
-## 📂 Structure du projet / Project structure
-
-- `index.html` → Page d’accueil / Home page  
-- `style.css` → Styles du site / Website styles  
-- `snake.js` → Jeu Snake / Snake game  
-- `Photographie.html`, `Decoration.html`, `Premiers-Soins.html`, `reservation.html` → Pages de services / Service pages  
-
----
-
-## 🚀 Déploiement / Deployment
-
-🇫🇷  
-Le site est hébergé gratuitement avec **GitHub Pages**.  
-Chaque modification sur la branche `main` est automatiquement mise en ligne.
-
-🇺🇸  
-The site is hosted for free using **GitHub Pages**.  
-Every update on the `main` branch is automatically deployed.
-
----
-
-## ✨ Auteur / Author
-
-👤 **Timj Lindor**  
-📷 Timj’s Photography / Timj’s Event  
-📍 Haïti
-
----
-
-## 📬 Contact
-
-📱 WhatsApp :  
-👉 https://wa.me/50931642817  
-
-📸 Instagram :  
-👉 https://instagram.com/timjsphotography  
-
-📧 Email :  
-👉 lindorelie23@gmail.com
-
----
-
-🙏 Merci de visiter ce projet !  
-Thank you for visiting this project!
-
-N’hésitez pas à proposer des améliorations ✨  
-Feel free to suggest improvements!
+Puis ouvrez `http://localhost:8000` dans votre navigateur.

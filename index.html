@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timj Multi-Services</title>
+    <title>Timj Multi-Services — Annonces &amp; Nouveautés</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -27,99 +27,150 @@
 
     <p class="env-warning" id="envWarning">Ce site est ouvert en local (file://). La connexion Supabase ne fonctionnera pas tant que le site n'est pas servi en http:// ou https:// — voir CONFIGURATION-SUPABASE.md.</p>
 
-    <div class="header">
-        <h1>Bienvenue sur ma page web</h1>
-        <img src="Timjs.PNG" alt="Timj">
-    <p>Nous offrons plusieurs types de services.</p>
-
+    <div class="profile-header">
+        <div class="profile-cover">
+            <div class="profile-avatar-wrap">
+                <img class="profile-avatar" src="Timjs.PNG" alt="Timj Multi-Services">
+            </div>
+        </div>
+        <div class="profile-info">
+            <div>
+                <h1>Timj Multi-Services</h1>
+                <p class="profile-bio">Décoration • Photographie &amp; Vidéographie • Premiers soins — Haïti</p>
+            </div>
+            <div class="profile-actions">
+                <a class="btn" href="https://wa.me/50931642817" target="_blank" rel="noopener">Envoyer un message</a>
+                <a class="btn secondary" href="reservation.html">Réserver</a>
+            </div>
+        </div>
     </div>
-    
-    
 
-    <section class="section">
-        <h2>Nos services</h2>
-        <p>Découvrez ce que nous proposons et réservez en quelques clics.</p>
-        <div class="grid grid-3">
-            <a class="card" href="Decoration.html">
-                <h3>Décoration</h3>
-                <p>Mariage, anniversaire, baby shower, baptême et plus encore.</p>
-            </a>
-            <a class="card" href="Photographie.html">
-                <h3>Photographie &amp; Vidéographie</h3>
-                <p>Studio, plein air, mariage et événementiel.</p>
-            </a>
-            <a class="card" href="Premiers-Soins.html">
-                <h3>Premiers soins</h3>
-                <p>Informations et gestes essentiels de santé.</p>
-            </a>
-            <a class="card" href="reservation.html">
-                <h3>Réservation</h3>
-                <p>Réservez et payez par MonCash ou NatCash.</p>
-            </a>
-            <a class="card" href="Snake.html">
-                <h3>Jeu Snake</h3>
-                <p>Une pause détente entre deux visites.</p>
-            </a>
-        </div>
-    </section>
+    <div class="stories-bar" aria-label="Nos services">
+        <a class="story" href="Decoration.html">
+            <span class="story-ring"><span class="story-icon">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9a24b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4L12 3z"/>
+                </svg>
+            </span></span>
+            <span class="story-label">Décoration</span>
+        </a>
+        <a class="story" href="Photographie.html">
+            <span class="story-ring"><span class="story-icon">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9a24b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="7" width="18" height="12" rx="2"/>
+                    <circle cx="12" cy="13" r="3.2"/>
+                    <rect x="8" y="4.5" width="4" height="3" rx="1"/>
+                </svg>
+            </span></span>
+            <span class="story-label">Photographie</span>
+        </a>
+        <a class="story" href="Premiers-Soins.html">
+            <span class="story-ring"><span class="story-icon">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9a24b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="8.5"/>
+                    <line x1="12" y1="8" x2="12" y2="16"/>
+                    <line x1="8" y1="12" x2="16" y2="12"/>
+                </svg>
+            </span></span>
+            <span class="story-label">Premiers soins</span>
+        </a>
+        <a class="story" href="reservation.html">
+            <span class="story-ring"><span class="story-icon">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9a24b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="4" y="5" width="16" height="15" rx="2"/>
+                    <line x1="4" y1="10" x2="20" y2="10"/>
+                    <line x1="8" y1="3" x2="8" y2="7"/>
+                    <line x1="16" y1="3" x2="16" y2="7"/>
+                </svg>
+            </span></span>
+            <span class="story-label">Réservation</span>
+        </a>
+        <a class="story" href="Snake.html">
+            <span class="story-ring"><span class="story-icon">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9a24b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 8h6a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h7"/>
+                    <circle cx="18" cy="7" r="1.4" fill="#c9a24b" stroke="none"/>
+                </svg>
+            </span></span>
+            <span class="story-label">Jeu</span>
+        </a>
+    </div>
 
+    <div class="home-grid">
+        <div class="home-main">
+            <!-- Formulaire de publication (visible seulement pour l'administratrice) -->
+            <section class="section hidden" id="publishSection">
+                <h2>Publier une nouveauté</h2>
+                <div class="composer">
+                    <img class="composer-avatar" src="Timjs.PNG" alt="Timj">
+                    <form id="annonceForm" class="auth-form">
+                        <label for="annonceTitle">Titre :</label>
+                        <input type="text" id="annonceTitle" name="annonceTitle" placeholder="Ex : Nouvelle offre décoration mariage" required>
 
-    <section class="section" id="auth">
-        <h2>Créer un compte</h2>
-        <p>Connectez-vous pour gérer vos réservations et suivre vos paiements.</p>
-        <div class="account-banner" id="accountBanner">
-            <p>Connecté en tant que <span id="accountEmail"></span><span>Vos réservations sont liées à ce compte.</span></p>
-            <button type="button" id="logoutBtn">Se déconnecter</button>
-        </div>
-        <div class="auth-grid" id="authGrid">
-            <div class="auth-card">
-                <h3>Inscription manuelle</h3>
-                <form id="signupForm" class="auth-form">
-                    <label for="signupEmail">Email :</label>
-                    <input type="email" id="signupEmail" name="signupEmail" placeholder="Votre email" required>
+                        <label for="annonceBody">Message :</label>
+                        <textarea id="annonceBody" name="annonceBody" rows="4" placeholder="Décrivez votre nouveauté, promotion ou information..." required></textarea>
 
-                    <label for="signupPassword">Mot de passe :</label>
-                    <input type="password" id="signupPassword" name="signupPassword" placeholder="Minimum 6 caractères" required>
-
-                    <label for="signupConfirm">Confirmer le mot de passe :</label>
-                    <input type="password" id="signupConfirm" name="signupConfirm" placeholder="Répétez le mot de passe" required>
-
-                    <button type="submit">Créer le compte</button>
-                </form>
-            </div>
-            <div class="auth-card">
-                <h3>Connexion sociale</h3>
-                <div class="auth-buttons">
-                    <button type="button" data-provider="facebook">Continuer avec Facebook</button>
-                    <button type="button" data-provider="google">Continuer avec Google</button>
-                    <button type="button" data-provider="apple">Continuer avec Apple</button>
+                        <button type="submit">Publier l'annonce</button>
+                    </form>
                 </div>
-                <p class="auth-note">Vous devez autoriser ces fournisseurs dans Supabase.</p>
-            </div>
-            <div class="auth-card">
-                <h3>Déjà un compte ?</h3>
-                <form id="loginForm" class="auth-form">
-                    <label for="loginEmail">Email :</label>
-                    <input type="email" id="loginEmail" name="loginEmail" placeholder="Votre email" required>
+                <p id="annonceMessage" class="auth-message"></p>
+            </section>
 
-                    <label for="loginPassword">Mot de passe :</label>
-                    <input type="password" id="loginPassword" name="loginPassword" placeholder="Votre mot de passe" required>
-
-                    <button type="submit">Se connecter</button>
-                </form>
-            </div>
+            <!-- Fil d'annonces -->
+            <section class="section" id="annonces">
+                <h2>Dernières annonces</h2>
+                <div id="annoncesEmpty" class="wardrobe-empty">Aucune annonce pour le moment. Revenez bientôt !</div>
+                <div id="annoncesList" class="feed"></div>
+            </section>
         </div>
-        <p id="authMessage" class="auth-message"></p>
-    </section>
 
-    <section class="section" id="wardrobe">
-        <h2>Garde-robe des paiements</h2>
-        <p class="album-description">Les preuves sont enregistrées sur cet appareil uniquement.</p>
-        <div id="wardrobe-empty" class="wardrobe-empty">Aucune preuve enregistrée pour le moment.</div>
-        <div id="wardrobe-grid" class="wardrobe-grid"></div>
-    </section>
+        <aside class="home-sidebar">
+            <section class="section">
+                <h2>Infos</h2>
+                <p class="album-description">Décoration, photographie &amp; vidéographie, premiers soins — réservation par MonCash ou NatCash.</p>
+                <p class="album-description spaced">📍 Haïti · 📞 <a href="tel:+50931642817">+509 31 64 28 17</a></p>
+            </section>
 
+            <section class="section" id="auth">
+                <h2>Connexion &amp; Inscription</h2>
+                <p>Connectez-vous ou créez un compte pour rester informé.</p>
+                <div class="account-banner" id="accountBanner">
+                    <p>Connecté en tant que <span id="accountEmail"></span></p>
+                    <button type="button" id="logoutBtn">Se déconnecter</button>
+                </div>
+                <div class="auth-grid" id="authGrid">
+                    <div class="auth-card">
+                        <h3>Connexion</h3>
+                        <form id="loginForm" class="auth-form">
+                            <label for="loginEmail">Email :</label>
+                            <input type="email" id="loginEmail" name="loginEmail" placeholder="Votre email" required>
 
+                            <label for="loginPassword">Mot de passe :</label>
+                            <input type="password" id="loginPassword" name="loginPassword" placeholder="Votre mot de passe" required>
+
+                            <button type="submit">Se connecter</button>
+                        </form>
+                    </div>
+                    <div class="auth-card">
+                        <h3>Inscription</h3>
+                        <form id="signupForm" class="auth-form">
+                            <label for="signupEmail">Email :</label>
+                            <input type="email" id="signupEmail" name="signupEmail" placeholder="Votre email" required>
+
+                            <label for="signupPassword">Mot de passe :</label>
+                            <input type="password" id="signupPassword" name="signupPassword" placeholder="Minimum 6 caractères" required>
+
+                            <label for="signupConfirm">Confirmer le mot de passe :</label>
+                            <input type="password" id="signupConfirm" name="signupConfirm" placeholder="Répétez le mot de passe" required>
+
+                            <button type="submit">Créer le compte</button>
+                        </form>
+                    </div>
+                </div>
+                <p id="authMessage" class="auth-message"></p>
+            </section>
+        </aside>
+    </div>
 
     <footer class="site-footer">
         <p>Timj Multi-Services — Suivez-moi sur les réseaux sociaux</p>
@@ -163,68 +214,283 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-client.js"></script>
-    <script src="js/wardrobe.js"></script>
     <script>
-        const wardrobeGrid = document.getElementById("wardrobe-grid");
-        const wardrobeEmpty = document.getElementById("wardrobe-empty");
-
-        function renderWardrobe() {
-            const items = loadWardrobe().sort((a, b) => b.createdAt - a.createdAt);
-            wardrobeGrid.innerHTML = "";
-            if (items.length === 0) {
-                wardrobeEmpty.style.display = "block";
-                return;
-            }
-            wardrobeEmpty.style.display = "none";
-            items.forEach((item) => {
-                const card = document.createElement("div");
-                card.className = "wardrobe-card";
-
-                const img = document.createElement("img");
-                img.src = item.image;
-                img.alt = `Preuve de paiement - ${item.name}`;
-
-                const title = document.createElement("h3");
-                title.textContent = item.name;
-
-                const meta = document.createElement("p");
-                meta.className = "wardrobe-meta";
-                meta.textContent = `${item.method} • ${item.amount} • ${item.date}`;
-
-                card.appendChild(img);
-                card.appendChild(title);
-                card.appendChild(meta);
-                wardrobeGrid.appendChild(card);
-            });
-        }
-
-        renderWardrobe();
+        // Email de l'administratrice autorisée à publier des annonces.
+        // Doit correspondre à l'email utilisé dans supabase/schema.sql.
+        const ADMIN_EMAIL = "lindorelie23@gmail.com";
 
         const authMessage = document.getElementById("authMessage");
         const signupForm = document.getElementById("signupForm");
         const loginForm = document.getElementById("loginForm");
-        const authButtons = document.querySelectorAll(".auth-buttons button");
         const authGrid = document.getElementById("authGrid");
         const accountBanner = document.getElementById("accountBanner");
         const accountEmail = document.getElementById("accountEmail");
         const logoutBtn = document.getElementById("logoutBtn");
+
+        const annoncesList = document.getElementById("annoncesList");
+        const annoncesEmpty = document.getElementById("annoncesEmpty");
+        const publishSection = document.getElementById("publishSection");
+        const annonceForm = document.getElementById("annonceForm");
+        const annonceMessage = document.getElementById("annonceMessage");
+
+        let currentUser = null;
+        const likedPosts = new Set();
 
         function setAuthMessage(text, isError = false) {
             authMessage.textContent = text;
             authMessage.classList.toggle("error", isError);
         }
 
+        function setAnnonceMessage(text, isError = false) {
+            annonceMessage.textContent = text;
+            annonceMessage.classList.toggle("error", isError);
+        }
+
+        function isAdmin() {
+            return currentUser && currentUser.email === ADMIN_EMAIL;
+        }
+
         function renderSession(session) {
-            if (session && session.user) {
-                accountEmail.textContent = session.user.email || "compte connecté";
+            currentUser = session && session.user ? session.user : null;
+            if (currentUser) {
+                accountEmail.textContent = currentUser.email || "compte connecté";
                 accountBanner.classList.add("visible");
                 authGrid.classList.add("hidden");
             } else {
                 accountBanner.classList.remove("visible");
                 authGrid.classList.remove("hidden");
             }
+            // Le formulaire de publication n'apparaît que pour l'administratrice.
+            publishSection.classList.toggle("hidden", !isAdmin());
+            renderAnnonces();
         }
 
+        function formatDate(iso) {
+            try {
+                return new Date(iso).toLocaleDateString("fr-FR", {
+                    day: "numeric", month: "long", year: "numeric",
+                    hour: "2-digit", minute: "2-digit"
+                });
+            } catch (e) {
+                return "";
+            }
+        }
+
+        const PLATFORM_LABELS = {
+            youtube: "YouTube",
+            facebook: "Facebook",
+            instagram: "Instagram",
+            tiktok: "TikTok"
+        };
+
+        async function loadFeedItems() {
+            const [annoncesRes, socialRes] = await Promise.all([
+                supabaseClient.from("annonces").select("*").order("created_at", { ascending: false }),
+                supabaseClient.from("social_posts").select("*").order("published_at", { ascending: false })
+            ]);
+
+            if (annoncesRes.error && socialRes.error) {
+                throw annoncesRes.error;
+            }
+
+            const annonces = (annoncesRes.data || []).map((item) => ({
+                source: "annonce",
+                id: item.id,
+                platform: null,
+                title: item.title,
+                body: item.body,
+                thumbnail: null,
+                permalink: null,
+                date: item.created_at
+            }));
+
+            const social = (socialRes.data || []).map((item) => ({
+                source: "social",
+                id: item.id,
+                platform: item.platform,
+                title: item.title,
+                body: item.body,
+                thumbnail: item.thumbnail_url,
+                permalink: item.permalink,
+                date: item.published_at
+            }));
+
+            return annonces.concat(social).sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
+
+        async function renderAnnonces() {
+            let items;
+            try {
+                items = await loadFeedItems();
+            } catch (err) {
+                annoncesList.innerHTML = "";
+                annoncesEmpty.style.display = "block";
+                annoncesEmpty.textContent = "Impossible de charger les annonces pour le moment.";
+                return;
+            }
+
+            annoncesList.innerHTML = "";
+
+            if (items.length === 0) {
+                annoncesEmpty.style.display = "block";
+                annoncesEmpty.textContent = "Aucune annonce pour le moment. Revenez bientôt !";
+                return;
+            }
+
+            annoncesEmpty.style.display = "none";
+
+            items.forEach((item) => {
+                const card = document.createElement("article");
+                card.className = "post-card";
+
+                const header = document.createElement("div");
+                header.className = "post-header";
+
+                const avatar = document.createElement("img");
+                avatar.className = "post-avatar";
+                avatar.src = "Timjs.PNG";
+                avatar.alt = "Timj Multi-Services";
+
+                const meta = document.createElement("div");
+                meta.className = "post-meta";
+
+                const author = document.createElement("span");
+                author.className = "post-author";
+                author.textContent = item.platform
+                    ? `Timj Multi-Services · via ${PLATFORM_LABELS[item.platform] || item.platform}`
+                    : "Timj Multi-Services";
+
+                const time = document.createElement("span");
+                time.className = "post-time";
+                time.textContent = formatDate(item.date);
+
+                meta.appendChild(author);
+                meta.appendChild(time);
+                header.appendChild(avatar);
+                header.appendChild(meta);
+
+                if (item.source === "annonce" && isAdmin()) {
+                    const tools = document.createElement("div");
+                    tools.className = "post-admin-tools";
+                    const del = document.createElement("button");
+                    del.type = "button";
+                    del.className = "annonce-delete";
+                    del.textContent = "Supprimer";
+                    del.addEventListener("click", async () => {
+                        if (!confirm("Supprimer cette annonce ?")) return;
+                        const { error: delErr } = await supabaseClient
+                            .from("annonces")
+                            .delete()
+                            .eq("id", item.id);
+                        if (delErr) {
+                            setAnnonceMessage(delErr.message, true);
+                        } else {
+                            renderAnnonces();
+                        }
+                    });
+                    tools.appendChild(del);
+                    header.appendChild(tools);
+                }
+
+                card.appendChild(header);
+
+                if (item.title) {
+                    const title = document.createElement("h3");
+                    title.className = "post-title";
+                    title.textContent = item.title;
+                    card.appendChild(title);
+                }
+
+                if (item.body) {
+                    const body = document.createElement("p");
+                    body.className = "post-body";
+                    body.textContent = item.body;
+                    card.appendChild(body);
+                }
+
+                if (item.thumbnail) {
+                    const img = document.createElement("img");
+                    img.className = "post-thumbnail";
+                    img.src = item.thumbnail;
+                    img.alt = item.title || "Publication";
+                    img.loading = "lazy";
+                    card.appendChild(img);
+                }
+
+                const actions = document.createElement("div");
+                actions.className = "post-actions";
+
+                const likeBtn = document.createElement("button");
+                likeBtn.type = "button";
+                likeBtn.className = "post-action";
+                likeBtn.textContent = "♡ J'aime";
+                if (likedPosts.has(item.id)) {
+                    likeBtn.classList.add("liked");
+                    likeBtn.textContent = "♥ J'aime";
+                }
+                likeBtn.addEventListener("click", () => {
+                    if (likedPosts.has(item.id)) {
+                        likedPosts.delete(item.id);
+                        likeBtn.classList.remove("liked");
+                        likeBtn.textContent = "♡ J'aime";
+                    } else {
+                        likedPosts.add(item.id);
+                        likeBtn.classList.add("liked");
+                        likeBtn.textContent = "♥ J'aime";
+                    }
+                });
+                actions.appendChild(likeBtn);
+
+                if (item.source === "social" && item.permalink) {
+                    const viewBtn = document.createElement("a");
+                    viewBtn.className = "post-action";
+                    viewBtn.href = item.permalink;
+                    viewBtn.target = "_blank";
+                    viewBtn.rel = "noopener";
+                    viewBtn.textContent = `↗ Voir sur ${PLATFORM_LABELS[item.platform] || item.platform}`;
+                    actions.appendChild(viewBtn);
+                } else if (item.source === "annonce") {
+                    const shareBtn = document.createElement("button");
+                    shareBtn.type = "button";
+                    shareBtn.className = "post-action";
+                    shareBtn.textContent = "↗ Partager";
+                    shareBtn.addEventListener("click", () => {
+                        const text = `${item.title} — ${item.body}`;
+                        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener");
+                    });
+                    actions.appendChild(shareBtn);
+                }
+
+                card.appendChild(actions);
+                annoncesList.appendChild(card);
+            });
+        }
+
+        // --- Publication d'une annonce ---
+        annonceForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            if (!isAdmin()) {
+                setAnnonceMessage("Seule l'administratrice peut publier.", true);
+                return;
+            }
+            const title = document.getElementById("annonceTitle").value.trim();
+            const body = document.getElementById("annonceBody").value.trim();
+            if (!title || !body) return;
+
+            const { error } = await supabaseClient
+                .from("annonces")
+                .insert({ title, body, author_email: currentUser.email });
+
+            if (error) {
+                setAnnonceMessage(error.message, true);
+            } else {
+                setAnnonceMessage("Annonce publiée !");
+                annonceForm.reset();
+                renderAnnonces();
+            }
+        });
+
+        // --- Authentification ---
         supabaseClient.auth.getSession().then(({ data }) => {
             renderSession(data.session);
         });
@@ -283,18 +549,6 @@
                 setAuthMessage("Connexion réussie.");
                 loginForm.reset();
             }
-        });
-
-        authButtons.forEach((button) => {
-            button.addEventListener("click", async () => {
-                const provider = button.dataset.provider;
-                const redirectTo = getRedirectUrl();
-                const { error } = await supabaseClient.auth.signInWithOAuth({
-                    provider,
-                    options: redirectTo ? { redirectTo } : {}
-                });
-                if (error) setAuthMessage(error.message, true);
-            });
         });
     </script>
     <script src="premium.js" defer></script>
