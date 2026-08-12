@@ -192,10 +192,6 @@
         <p class="footer-meta"><a href="terms.html">Conditions d'utilisation</a> · <a href="privacy.html">Confidentialité</a></p>
     </footer>
 
-    <div class="lightbox" id="feedLightbox" role="dialog" aria-modal="true" aria-label="Aperçu de l'image">
-        <img id="feedLightboxImg" alt="Photo en grand format">
-    </div>
-
     <script>
         (function () {
             const overlay = document.getElementById("introOverlay");
@@ -244,24 +240,6 @@
         const publishSection = document.getElementById("publishSection");
         const annonceForm = document.getElementById("annonceForm");
         const annonceMessage = document.getElementById("annonceMessage");
-
-        const feedLightbox = document.getElementById("feedLightbox");
-        const feedLightboxImg = document.getElementById("feedLightboxImg");
-
-        function openLightbox(src) {
-            feedLightboxImg.src = src;
-            feedLightbox.classList.add("open");
-        }
-
-        function closeLightbox() {
-            feedLightbox.classList.remove("open");
-            feedLightboxImg.src = "";
-        }
-
-        feedLightbox.addEventListener("click", closeLightbox);
-        document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape") closeLightbox();
-        });
 
         let currentUser = null;
         const likedPosts = new Set();
@@ -482,7 +460,8 @@
                     img.src = item.thumbnail;
                     img.alt = item.title || "Publication";
                     img.loading = "lazy";
-                    img.addEventListener("click", () => openLightbox(item.thumbnail));
+                    // L'agrandissement au clic est géré par premium.js
+                    // (délégation d'événement sur .post-thumbnail).
                     card.appendChild(img);
                 }
 

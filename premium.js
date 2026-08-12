@@ -34,3 +34,50 @@
         observer.observe(el);
     });
 })();
+
+/* ===== Agrandissement au clic (lightbox) =====
+   Couvre les galeries des pages photo et les images du fil d'actualité.
+   La délégation d'événement est nécessaire car les publications du fil
+   sont ajoutées au DOM après le chargement de la page. */
+(function () {
+    var SELECTOR = ".gallery-grid img, .gallery img, .post-thumbnail";
+    var lightbox = null;
+    var big = null;
+
+    function close() {
+        if (!lightbox) return;
+        lightbox.classList.remove("open");
+        big.src = "";
+    }
+
+    function open(src) {
+        if (!lightbox) {
+            lightbox = document.createElement("div");
+            lightbox.className = "lightbox";
+            lightbox.setAttribute("role", "dialog");
+            lightbox.setAttribute("aria-modal", "true");
+            lightbox.setAttribute("aria-label", "Aperçu photo");
+            big = document.createElement("img");
+            big.alt = "Photo en grand format";
+            lightbox.appendChild(big);
+            lightbox.addEventListener("click", close);
+            document.body.appendChild(lightbox);
+        }
+        big.src = src;
+        lightbox.classList.add("open");
+    }
+
+    document.addEventListener("click", function (e) {
+        if (!(e.target instanceof Element)) return;
+        var img = e.target.closest(SELECTOR);
+        if (img) {
+            open(img.currentSrc || img.src);
+        }
+    });
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+            close();
+        }
+    });
+})();
