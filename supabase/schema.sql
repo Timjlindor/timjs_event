@@ -182,6 +182,22 @@ alter table public.platform_tokens enable row level security;
 -- select cron.unschedule('sync-social-posts-every-20-min');
 
 -- ============================================================
+-- 5. Lecture native, likes et commentaires réels
+-- ============================================================
+--
+-- Ajoute le type de média (pour savoir s'il faut afficher un lecteur
+-- vidéo natif ou une simple photo), l'URL d'intégration du lecteur, et
+-- les compteurs réels de likes/commentaires récupérés depuis chaque
+-- plateforme au moment de la synchronisation.
+
+alter table public.social_posts
+    add column if not exists media_type text
+        check (media_type in ('photo', 'video', 'text')),
+    add column if not exists video_embed_url text,
+    add column if not exists like_count integer,
+    add column if not exists comment_count integer;
+
+-- ============================================================
 -- Récapitulatif des accès
 -- ============================================================
 -- - Formulaire de réservation (site) : peut seulement INSÉRER une ligne

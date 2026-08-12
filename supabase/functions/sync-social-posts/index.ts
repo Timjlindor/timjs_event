@@ -1,7 +1,9 @@
 // Récupère les dernières publications YouTube / Facebook / Instagram /
-// TikTok et les upsert dans public.social_posts. Déclenchée par pg_cron
-// (voir supabase/schema.sql, section 4) ou appelée manuellement pour
-// tester : voir CONFIGURATION-SUPABASE.md.
+// TikTok et les upsert dans public.social_posts, avec le type de média,
+// l'URL d'intégration du lecteur natif, et les compteurs réels de likes
+// et commentaires. Déclenchée par pg_cron (voir supabase/schema.sql,
+// section 4) ou appelée manuellement pour tester : voir
+// CONFIGURATION-SUPABASE.md.
 //
 // Secrets attendus (Project Settings → Edge Functions → Secrets) :
 //   YOUTUBE_API_KEY, YOUTUBE_CHANNEL_ID
@@ -26,6 +28,10 @@ type SocialPost = {
     thumbnail_url: string | null;
     permalink: string;
     published_at: string;
+    media_type: "photo" | "video" | "text";
+    video_embed_url: string | null;
+    like_count: number | null;
+    comment_count: number | null;
 };
 
 // Les réseaux sociaux (surtout Facebook, copié-collé depuis d'autres apps)
@@ -75,29 +81,54 @@ async function syncYouTube() {
         `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=10&key=${apiKey}`
     );
     const itemsData = await itemsRes.json();
+    const items = itemsData.items || [];
 
-    const rows: SocialPost[] = (itemsData.items || []).map((item: any) => ({
-        platform: "youtube",
-        external_id: item.snippet.resourceId.videoId,
-        title: sanitizeText(item.snippet.title),
-        body: sanitizeText(item.snippet.description ? item.snippet.description.slice(0, 500) : null),
-        media_url: null,
-        thumbnail_url: item.snippet.thumbnails?.medium?.url || null,
-        permalink: `https://www.youtube.com/watch?v=${item.snippet.resourceId.videoId}`,
-        published_at: item.snippet.publishedAt,
-    }));
+    const videoIds = items.map((item: any) => item.snippet.resourceId.videoId).join(",");
+    let statsById: Record<string, { likeCount?: string; commentCount?: string }> = {};
+    if (videoIds) {
+        const statsRes = await fetch(
+            `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}&key=${apiKey}`
+        );
+        const statsData = await statsRes.json();
+        for (const v of statsData.items || []) {
+            statsById[v.id] = v.statistics || {};
+        }
+    }
+
+    const rows: SocialPost[] = items.map((item: any) => {
+        const videoId = item.snippet.resourceId.videoId;
+        const stats = statsById[videoId] || {};
+        return {
+            platform: "youtube",
+            external_id: videoId,
+            title: sanitizeText(item.snippet.title),
+            body: sanitizeText(item.snippet.description ? item.snippet.description.slice(0, 500) : null),
+            media_url: null,
+            thumbnail_url: item.snippet.thumbnails?.medium?.url || null,
+            permalink: `https://www.youtube.com/watch?v=${videoId}`,
+            published_at: item.snippet.publishedAt,
+            media_type: "video",
+            video_embed_url: `https://www.youtube.com/embed/${videoId}`,
+            like_count: stats.likeCount != null ? Number(stats.likeCount) : null,
+            comment_count: stats.commentCount != null ? Number(stats.commentCount) : null,
+        };
+    });
     await upsertPosts(rows);
 }
+
+let lastFacebookDebug: unknown = null;
 
 async function syncFacebook() {
     const pageId = Deno.env.get("FB_PAGE_ID");
     const token = Deno.env.get("FB_PAGE_ACCESS_TOKEN");
     if (!pageId || !token) return;
 
+    const fields = "id,message,full_picture,permalink_url,created_time,attachments{type}";
     const res = await fetch(
-        `https://graph.facebook.com/v19.0/${pageId}/posts?fields=id,message,full_picture,permalink_url,created_time&limit=10&access_token=${token}`
+        `https://graph.facebook.com/v19.0/${pageId}/posts?fields=${encodeURIComponent(fields)}&limit=10&access_token=${token}`
     );
     const data = await res.json();
+    lastFacebookDebug = { status: res.status, sample: data.data ? data.data[0] : data };
     if (data.error) {
         console.error("facebook error:", data.error);
         return;
@@ -105,16 +136,26 @@ async function syncFacebook() {
 
     const rows: SocialPost[] = (data.data || [])
         .filter((post: any) => post.message || post.full_picture)
-        .map((post: any) => ({
-            platform: "facebook",
-            external_id: post.id,
-            title: null,
-            body: sanitizeText(post.message),
-            media_url: null,
-            thumbnail_url: post.full_picture || null,
-            permalink: post.permalink_url,
-            published_at: post.created_time,
-        }));
+        .map((post: any) => {
+            const attachType: string = post.attachments?.data?.[0]?.type || "";
+            const isVideo = attachType.includes("video");
+            return {
+                platform: "facebook",
+                external_id: post.id,
+                title: null,
+                body: sanitizeText(post.message),
+                media_url: null,
+                thumbnail_url: post.full_picture || null,
+                permalink: post.permalink_url,
+                published_at: post.created_time,
+                media_type: isVideo ? "video" : (post.full_picture ? "photo" : "text"),
+                video_embed_url: isVideo
+                    ? `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(post.permalink_url)}&show_text=false`
+                    : null,
+                like_count: post.likes?.summary?.total_count ?? null,
+                comment_count: post.comments?.summary?.total_count ?? null,
+            };
+        });
     await upsertPosts(rows);
 }
 
@@ -123,8 +164,9 @@ async function syncInstagram() {
     const token = Deno.env.get("IG_ACCESS_TOKEN") || Deno.env.get("FB_PAGE_ACCESS_TOKEN");
     if (!igUserId || !token) return;
 
+    const fields = "id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,like_count,comments_count";
     const res = await fetch(
-        `https://graph.facebook.com/v19.0/${igUserId}/media?fields=id,caption,media_url,permalink,thumbnail_url,timestamp&limit=10&access_token=${token}`
+        `https://graph.facebook.com/v19.0/${igUserId}/media?fields=${fields}&limit=10&access_token=${token}`
     );
     const data = await res.json();
     if (data.error) {
@@ -132,16 +174,24 @@ async function syncInstagram() {
         return;
     }
 
-    const rows: SocialPost[] = (data.data || []).map((post: any) => ({
-        platform: "instagram",
-        external_id: post.id,
-        title: null,
-        body: sanitizeText(post.caption ? post.caption.slice(0, 500) : null),
-        media_url: post.media_url || null,
-        thumbnail_url: post.thumbnail_url || post.media_url || null,
-        permalink: post.permalink,
-        published_at: post.timestamp,
-    }));
+    const rows: SocialPost[] = (data.data || []).map((post: any) => {
+        const isVideo = post.media_type === "VIDEO";
+        const permalink: string = post.permalink;
+        return {
+            platform: "instagram",
+            external_id: post.id,
+            title: null,
+            body: sanitizeText(post.caption ? post.caption.slice(0, 500) : null),
+            media_url: post.media_url || null,
+            thumbnail_url: post.thumbnail_url || post.media_url || null,
+            permalink,
+            published_at: post.timestamp,
+            media_type: isVideo ? "video" : "photo",
+            video_embed_url: isVideo ? `${permalink.replace(/\/$/, "")}/embed` : null,
+            like_count: post.like_count ?? null,
+            comment_count: post.comments_count ?? null,
+        };
+    });
     await upsertPosts(rows);
 }
 
@@ -191,7 +241,7 @@ async function syncTikTok() {
     if (!accessToken) return;
 
     const res = await fetch(
-        "https://open.tiktokapis.com/v2/video/list/?fields=id,title,cover_image_url,share_url,create_time",
+        "https://open.tiktokapis.com/v2/video/list/?fields=id,title,cover_image_url,share_url,create_time,like_count,comment_count",
         {
             method: "POST",
             headers: {
@@ -216,11 +266,15 @@ async function syncTikTok() {
         thumbnail_url: video.cover_image_url || null,
         permalink: video.share_url,
         published_at: new Date(video.create_time * 1000).toISOString(),
+        media_type: "video",
+        video_embed_url: `https://www.tiktok.com/embed/v2/${video.id}`,
+        like_count: video.like_count ?? null,
+        comment_count: video.comment_count ?? null,
     }));
     await upsertPosts(rows);
 }
 
-Deno.serve(async (_req) => {
+Deno.serve(async (req) => {
     const results = await Promise.allSettled([
         syncYouTube(),
         syncFacebook(),
@@ -231,6 +285,14 @@ Deno.serve(async (_req) => {
     const errors = results
         .filter((r): r is PromiseRejectedResult => r.status === "rejected")
         .map((r) => String(r.reason));
+
+    const url = new URL(req.url);
+    if (url.searchParams.get("debug") === "1") {
+        return new Response(
+            JSON.stringify({ ok: errors.length === 0, errors, facebook_debug: lastFacebookDebug }, null, 2),
+            { headers: { "Content-Type": "application/json" } }
+        );
+    }
 
     return new Response(
         JSON.stringify({ ok: errors.length === 0, errors }),

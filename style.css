@@ -252,13 +252,29 @@ img {
 
 .decor-card img {
     width: 100%;
-    height: auto;
+    height: 220px;
+    object-fit: cover;
     display: block;
     transition: transform 0.6s var(--ease);
 }
 
 .decor-card:hover img {
     transform: scale(1.04);
+}
+
+.decor-label {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 26px 16px 14px;
+    color: #ffffff;
+    font-family: "Fraunces", "Georgia", serif;
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: 0.01em;
+    background: linear-gradient(to top, rgba(20, 18, 15, 0.78), rgba(20, 18, 15, 0));
+    pointer-events: none;
 }
 
 /* ===== Hero banner image ===== */
@@ -1541,5 +1557,179 @@ canvas {
     .section,
     .cta {
         padding: 22px 18px;
+    }
+}
+
+/* =========================================================
+   ✨ Arrière-plan animé & effets 3D (ajout)
+   ========================================================= */
+
+/* ----- Arrière-plan : aurore dorée animée + fine grille + vignette ----- */
+body::before {
+    content: "";
+    position: fixed;
+    inset: -25%;
+    z-index: -2;
+    pointer-events: none;
+    background:
+        radial-gradient(40% 44% at 16% 16%, rgba(201, 162, 75, 0.55), transparent 60%),
+        radial-gradient(38% 42% at 86% 12%, rgba(154, 122, 69, 0.45), transparent 62%),
+        radial-gradient(50% 50% at 72% 88%, rgba(241, 230, 207, 0.85), transparent 62%),
+        radial-gradient(44% 44% at 8% 82%, rgba(201, 162, 75, 0.40), transparent 62%),
+        radial-gradient(40% 40% at 50% 55%, rgba(154, 122, 69, 0.18), transparent 70%);
+    filter: blur(16px) saturate(125%);
+    animation: auroraDrift 24s ease-in-out infinite alternate;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+        radial-gradient(130% 120% at 50% -10%, transparent 58%, rgba(28, 26, 23, 0.10) 100%),
+        linear-gradient(rgba(28, 26, 23, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(28, 26, 23, 0.04) 1px, transparent 1px);
+    background-size: 100% 100%, 48px 48px, 48px 48px;
+}
+
+@keyframes auroraDrift {
+    0%   { transform: translate3d(-4%, -3%, 0) scale(1);    }
+    50%  { transform: translate3d(4%, 3%, 0)  scale(1.10);  }
+    100% { transform: translate3d(-3%, 4%, 0) scale(1.05);  }
+}
+
+/* ----- Perspective des conteneurs pour la 3D ----- */
+.grid,
+.home-grid,
+.stories-bar,
+.stats,
+.decor-grid,
+.fun-grid {
+    perspective: 1200px;
+}
+
+/* ----- Cartes en relief 3D au survol ----- */
+.card,
+.decor-card,
+.fun-card,
+.payment-card,
+.stat {
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+.card:hover,
+.stat:hover {
+    transform: translateY(-7px) rotateX(6deg) rotateY(-6deg) scale(1.02);
+    box-shadow:
+        var(--shadow-lg),
+        0 0 0 1px rgba(201, 162, 75, 0.35);
+}
+
+.decor-card:hover,
+.fun-card:hover,
+.payment-card:hover {
+    transform: translateY(-7px) rotateX(5deg) rotateY(-5deg) scale(1.015);
+    box-shadow:
+        var(--shadow-lg),
+        0 0 0 1px rgba(201, 162, 75, 0.30);
+}
+
+/* ----- Bannière de profil : aurore dorée animée (joli fond) ----- */
+.profile-cover {
+    perspective: 900px;
+    position: relative;
+}
+
+.profile-cover::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+        radial-gradient(45% 65% at 18% 20%, rgba(201, 162, 75, 0.60), transparent 60%),
+        radial-gradient(45% 60% at 88% 25%, rgba(154, 122, 69, 0.50), transparent 60%),
+        radial-gradient(55% 75% at 62% 105%, rgba(201, 162, 75, 0.40), transparent 60%);
+    filter: blur(8px);
+    animation: auroraDrift 18s ease-in-out infinite alternate;
+}
+
+/* ----- Avatar du profil : flottement + inclinaison 3D ----- */
+
+.profile-avatar-wrap {
+    transform-style: preserve-3d;
+    transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease);
+    animation: floaty 6s ease-in-out infinite;
+}
+
+.profile-avatar-wrap:hover {
+    transform: translateY(-6px) rotateX(8deg) rotateY(12deg) scale(1.06);
+    box-shadow: var(--shadow-lg);
+}
+
+@keyframes floaty {
+    0%, 100% { translate: 0 0; }
+    50%      { translate: 0 -8px; }
+}
+
+/* ----- Stories : anneau doré qui tourne + relief au survol ----- */
+.story-ring {
+    animation: ringSpin 9s linear infinite;
+}
+
+.story-icon {
+    animation: ringSpin 9s linear infinite reverse; /* garde l'icône droite */
+}
+
+.story {
+    transform-style: preserve-3d;
+    transition: transform 0.3s var(--ease);
+}
+
+.story:hover {
+    transform: translateY(-5px) rotateX(10deg) scale(1.05);
+}
+
+@keyframes ringSpin {
+    to { rotate: 360deg; }
+}
+
+/* ----- Boutons : léger effet 3D ----- */
+.btn {
+    transform-style: preserve-3d;
+}
+
+.btn:hover {
+    transform: translateY(-3px) rotateX(12deg);
+}
+
+.btn:active {
+    transform: translateY(1px) scale(0.98);
+}
+
+/* ----- Respect de « réduire les animations » ----- */
+@media (prefers-reduced-motion: reduce) {
+    body::before,
+    .profile-avatar-wrap,
+    .story-ring,
+    .story-icon {
+        animation: none;
+    }
+
+    .card:hover,
+    .stat:hover,
+    .decor-card:hover,
+    .fun-card:hover,
+    .payment-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .profile-avatar-wrap:hover,
+    .story:hover,
+    .btn:hover {
+        transform: none;
     }
 }
