@@ -9,11 +9,6 @@
 </head>
 <body>
 
-    <div class="intro-overlay" id="introOverlay">
-        <video id="introVideo" src="Intro.mp4" poster="images/intro-poster.jpg" muted autoplay playsinline></video>
-        <button type="button" class="intro-skip" id="introSkip">Passer &rsaquo;</button>
-    </div>
-
     <nav class="site-nav">
         <a class="brand" href="index.html"><img src="Timjs.PNG" alt="Timj">Timj Multi-Services</a>
         <div class="nav-links">
@@ -191,34 +186,6 @@
         <p class="footer-meta">Tous droits réservés à la Famille Lindor</p>
         <p class="footer-meta"><a href="terms.html">Conditions d'utilisation</a> · <a href="privacy.html">Confidentialité</a></p>
     </footer>
-
-    <script>
-        (function () {
-            const overlay = document.getElementById("introOverlay");
-            const video = document.getElementById("introVideo");
-            const skip = document.getElementById("introSkip");
-            if (!overlay) return;
-
-            function hideIntro() {
-                overlay.classList.add("hide");
-                setTimeout(() => overlay.remove(), 700);
-            }
-
-            // Ne jouer qu'une fois par session
-            let seen = false;
-            try { seen = sessionStorage.getItem("introSeen") === "1"; } catch (e) {}
-            if (seen) { overlay.remove(); return; }
-            try { sessionStorage.setItem("introSeen", "1"); } catch (e) {}
-
-            skip.addEventListener("click", hideIntro);
-            video.addEventListener("ended", hideIntro);
-            video.addEventListener("error", () => overlay.remove());
-            // Sécurité : si la vidéo ne se charge pas, on retire l'intro
-            setTimeout(() => { if (video.readyState === 0) overlay.remove(); }, 2500);
-            const p = video.play();
-            if (p && p.catch) p.catch(() => {});
-        })();
-    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-client.js"></script>
