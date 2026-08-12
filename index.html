@@ -186,6 +186,10 @@
         <p class="footer-meta"><a href="terms.html">Conditions d'utilisation</a> · <a href="privacy.html">Confidentialité</a></p>
     </footer>
 
+    <div class="lightbox" id="feedLightbox" role="dialog" aria-modal="true" aria-label="Aperçu de l'image">
+        <img id="feedLightboxImg" alt="Photo en grand format">
+    </div>
+
     <script>
         (function () {
             const overlay = document.getElementById("introOverlay");
@@ -234,6 +238,24 @@
         const publishSection = document.getElementById("publishSection");
         const annonceForm = document.getElementById("annonceForm");
         const annonceMessage = document.getElementById("annonceMessage");
+
+        const feedLightbox = document.getElementById("feedLightbox");
+        const feedLightboxImg = document.getElementById("feedLightboxImg");
+
+        function openLightbox(src) {
+            feedLightboxImg.src = src;
+            feedLightbox.classList.add("open");
+        }
+
+        function closeLightbox() {
+            feedLightbox.classList.remove("open");
+            feedLightboxImg.src = "";
+        }
+
+        feedLightbox.addEventListener("click", closeLightbox);
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") closeLightbox();
+        });
 
         let currentUser = null;
         const likedPosts = new Set();
@@ -303,7 +325,11 @@
                 body: item.body,
                 thumbnail: null,
                 permalink: null,
-                date: item.created_at
+                date: item.created_at,
+                mediaType: "text",
+                videoEmbedUrl: null,
+                likeCount: null,
+                commentCount: null
             }));
 
             const social = (socialRes.data || []).map((item) => ({
@@ -314,7 +340,11 @@
                 body: item.body,
                 thumbnail: item.thumbnail_url,
                 permalink: item.permalink,
-                date: item.published_at
+                date: item.published_at,
+                mediaType: item.media_type,
+                videoEmbedUrl: item.video_embed_url,
+                likeCount: item.like_count,
+                commentCount: item.comment_count
             }));
 
             return annonces.concat(social).sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -410,13 +440,41 @@
                     card.appendChild(body);
                 }
 
-                if (item.thumbnail) {
+                if (item.mediaType === "video" && item.videoEmbedUrl) {
+                    const videoWrap = document.createElement("div");
+                    videoWrap.className = "post-video-wrap" + (item.platform === "tiktok" || item.platform === "instagram" ? " vertical" : "");
+                    const iframe = document.createElement("iframe");
+                    iframe.src = item.videoEmbedUrl;
+                    iframe.loading = "lazy";
+                    iframe.allow = "encrypted-media; picture-in-picture; fullscreen";
+                    iframe.allowFullscreen = true;
+                    iframe.setAttribute("title", item.title || "Vidéo");
+                    videoWrap.appendChild(iframe);
+                    card.appendChild(videoWrap);
+                } else if (item.thumbnail) {
                     const img = document.createElement("img");
                     img.className = "post-thumbnail";
                     img.src = item.thumbnail;
                     img.alt = item.title || "Publication";
                     img.loading = "lazy";
+                    img.addEventListener("click", () => openLightbox(item.thumbnail));
                     card.appendChild(img);
+                }
+
+                if (item.likeCount != null || item.commentCount != null) {
+                    const stats = document.createElement("div");
+                    stats.className = "post-stats";
+                    if (item.likeCount != null) {
+                        const likeStat = document.createElement("span");
+                        likeStat.textContent = `${item.likeCount} j'aime`;
+                        stats.appendChild(likeStat);
+                    }
+                    if (item.commentCount != null) {
+                        const commentStat = document.createElement("span");
+                        commentStat.textContent = `${item.commentCount} commentaire${item.commentCount === 1 ? "" : "s"}`;
+                        stats.appendChild(commentStat);
+                    }
+                    card.appendChild(stats);
                 }
 
                 const actions = document.createElement("div");
