@@ -277,6 +277,30 @@ img {
     pointer-events: none;
 }
 
+/* ===== Galerie de photos (sous-pages) ===== */
+.gallery-grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    margin-top: 16px;
+}
+
+.gallery-grid img {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    display: block;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease);
+}
+
+.gallery-grid img:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: var(--shadow-lg);
+}
+
 /* ===== Hero banner image ===== */
 .hero-banner {
     width: 100%;
@@ -1599,21 +1623,22 @@ canvas {
    ✨ Arrière-plan animé & effets 3D (ajout)
    ========================================================= */
 
-/* ----- Arrière-plan : aurore dorée animée + fine grille + vignette ----- */
+/* ----- Arrière-plan : image plein écran (fixe) + léger voile ----- */
+/* On rend le fond du body transparent pour laisser voir l'image ci-dessous */
+body {
+    background: transparent;
+}
+
 body::before {
     content: "";
     position: fixed;
-    inset: -25%;
+    inset: 0;
     z-index: -2;
     pointer-events: none;
     background:
-        radial-gradient(40% 44% at 16% 16%, rgba(201, 162, 75, 0.55), transparent 60%),
-        radial-gradient(38% 42% at 86% 12%, rgba(154, 122, 69, 0.45), transparent 62%),
-        radial-gradient(50% 50% at 72% 88%, rgba(241, 230, 207, 0.85), transparent 62%),
-        radial-gradient(44% 44% at 8% 82%, rgba(201, 162, 75, 0.40), transparent 62%),
-        radial-gradient(40% 40% at 50% 55%, rgba(154, 122, 69, 0.18), transparent 70%);
-    filter: blur(16px) saturate(125%);
-    animation: auroraDrift 24s ease-in-out infinite alternate;
+        linear-gradient(180deg, rgba(247, 245, 241, 0.34), rgba(247, 245, 241, 0.48)),
+        url("css/fondjpeg.jpeg") center center / cover no-repeat;
+    animation: bgZoom 34s ease-in-out infinite alternate;
 }
 
 body::after {
@@ -1622,17 +1647,13 @@ body::after {
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background-image:
-        radial-gradient(130% 120% at 50% -10%, transparent 58%, rgba(28, 26, 23, 0.10) 100%),
-        linear-gradient(rgba(28, 26, 23, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(28, 26, 23, 0.04) 1px, transparent 1px);
-    background-size: 100% 100%, 48px 48px, 48px 48px;
+    background:
+        radial-gradient(135% 115% at 50% -8%, transparent 60%, rgba(28, 26, 23, 0.14) 100%);
 }
 
-@keyframes auroraDrift {
-    0%   { transform: translate3d(-4%, -3%, 0) scale(1);    }
-    50%  { transform: translate3d(4%, 3%, 0)  scale(1.10);  }
-    100% { transform: translate3d(-3%, 4%, 0) scale(1.05);  }
+@keyframes bgZoom {
+    from { transform: scale(1);    }
+    to   { transform: scale(1.08); }
 }
 
 /* ----- Perspective des conteneurs pour la 3D ----- */
