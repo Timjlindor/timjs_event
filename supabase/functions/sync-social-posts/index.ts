@@ -28,6 +28,26 @@ type SocialPost = {
     published_at: string;
 };
 
+// Les réseaux sociaux (surtout Facebook, copié-collé depuis d'autres apps)
+// laissent parfois des caractères invisibles ou de mise en forme (marques
+// bidi, caractère de remplacement d'objet) qui s'affichent comme des
+// carrés glitchés sur le site. On les retire avant stockage.
+const INVISIBLE_CHARS_RE = new RegExp(
+    "[\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F\\u007F" + // contrôles (hors \t \n)
+    "\\u200B-\\u200F" + // espaces/marques de largeur nulle
+    "\\u2028-\\u202E" + // séparateurs de ligne, marques bidi
+    "\\u2060-\\u2069" + // isolats bidi, soudure de mots
+    "\\uFFF9-\\uFFFC" + // annotations, caractère de remplacement d'objet
+    "\\uFFFE\\uFFFF]",  // non-caractères
+    "g"
+);
+
+function sanitizeText(text: string | null | undefined): string | null {
+    if (!text) return null;
+    const cleaned = text.replace(INVISIBLE_CHARS_RE, "").trim();
+    return cleaned || null;
+}
+
 async function upsertPosts(rows: SocialPost[]) {
     if (rows.length === 0) return;
     const { error } = await supabase
@@ -59,8 +79,8 @@ async function syncYouTube() {
     const rows: SocialPost[] = (itemsData.items || []).map((item: any) => ({
         platform: "youtube",
         external_id: item.snippet.resourceId.videoId,
-        title: item.snippet.title,
-        body: item.snippet.description ? item.snippet.description.slice(0, 500) : null,
+        title: sanitizeText(item.snippet.title),
+        body: sanitizeText(item.snippet.description ? item.snippet.description.slice(0, 500) : null),
         media_url: null,
         thumbnail_url: item.snippet.thumbnails?.medium?.url || null,
         permalink: `https://www.youtube.com/watch?v=${item.snippet.resourceId.videoId}`,
@@ -89,7 +109,7 @@ async function syncFacebook() {
             platform: "facebook",
             external_id: post.id,
             title: null,
-            body: post.message || null,
+            body: sanitizeText(post.message),
             media_url: null,
             thumbnail_url: post.full_picture || null,
             permalink: post.permalink_url,
@@ -116,7 +136,7 @@ async function syncInstagram() {
         platform: "instagram",
         external_id: post.id,
         title: null,
-        body: post.caption ? post.caption.slice(0, 500) : null,
+        body: sanitizeText(post.caption ? post.caption.slice(0, 500) : null),
         media_url: post.media_url || null,
         thumbnail_url: post.thumbnail_url || post.media_url || null,
         permalink: post.permalink,
@@ -190,7 +210,7 @@ async function syncTikTok() {
     const rows: SocialPost[] = videos.map((video: any) => ({
         platform: "tiktok",
         external_id: video.id,
-        title: video.title || null,
+        title: sanitizeText(video.title),
         body: null,
         media_url: null,
         thumbnail_url: video.cover_image_url || null,

@@ -1413,8 +1413,9 @@ canvas {
 
 .post-thumbnail {
     width: 100%;
-    max-height: 320px;
-    object-fit: cover;
+    max-height: 520px;
+    object-fit: contain;
+    background: var(--bg-alt);
     border-radius: var(--radius-sm);
     border: 1px solid var(--border);
     margin-top: 12px;
