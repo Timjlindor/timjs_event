@@ -293,6 +293,7 @@ img {
     border-radius: var(--radius);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-sm);
+    cursor: zoom-in;
     transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease);
 }
 

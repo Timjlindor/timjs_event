@@ -439,14 +439,33 @@
                     card.appendChild(title);
                 }
 
-                if (item.body) {
+                // Les publications Facebook sont rendues par le plugin
+                // officiel : il affiche déjà le texte, le média et les vrais
+                // compteurs de réactions/commentaires. On n'ajoute donc ni
+                // notre texte ni nos statistiques pour éviter les doublons.
+                const useFacebookEmbed =
+                    item.source === "social" && item.platform === "facebook" && !!item.permalink;
+
+                if (item.body && !useFacebookEmbed) {
                     const body = document.createElement("p");
                     body.className = "post-body";
                     body.textContent = item.body;
                     card.appendChild(body);
                 }
 
-                if (item.mediaType === "video" && item.videoEmbedUrl) {
+                if (useFacebookEmbed) {
+                    const embedWrap = document.createElement("div");
+                    embedWrap.className = "post-embed-wrap" + (item.mediaType === "text" ? " text-only" : "");
+                    const iframe = document.createElement("iframe");
+                    iframe.src = `https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(item.permalink)}&show_text=true&width=500`;
+                    iframe.loading = "lazy";
+                    iframe.allow = "encrypted-media; picture-in-picture; clipboard-write";
+                    iframe.allowFullscreen = true;
+                    iframe.setAttribute("scrolling", "no");
+                    iframe.setAttribute("title", "Publication Facebook");
+                    embedWrap.appendChild(iframe);
+                    card.appendChild(embedWrap);
+                } else if (item.mediaType === "video" && item.videoEmbedUrl) {
                     const videoWrap = document.createElement("div");
                     videoWrap.className = "post-video-wrap" + (item.platform === "tiktok" || item.platform === "instagram" ? " vertical" : "");
                     const iframe = document.createElement("iframe");
@@ -467,7 +486,7 @@
                     card.appendChild(img);
                 }
 
-                if (item.likeCount != null || item.commentCount != null) {
+                if (!useFacebookEmbed && (item.likeCount != null || item.commentCount != null)) {
                     const stats = document.createElement("div");
                     stats.className = "post-stats";
                     if (item.likeCount != null) {

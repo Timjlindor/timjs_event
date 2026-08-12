@@ -116,8 +116,13 @@ async function syncYouTube() {
     await upsertPosts(rows);
 }
 
-let lastFacebookDebug: unknown = null;
-
+// Note : les likes et commentaires Facebook ne sont volontairement pas
+// récupérés ici. L'API les réserve aux permissions pages_read_engagement
+// et pages_read_user_content, qui exigent une App Review Meta et une
+// vérification d'entreprise. Le site affiche donc les publications
+// Facebook via le plugin officiel (voir index.html), qui montre les vrais
+// compteurs sans aucune permission. like_count/comment_count restent null
+// pour cette plateforme.
 async function syncFacebook() {
     const pageId = Deno.env.get("FB_PAGE_ID");
     const token = Deno.env.get("FB_PAGE_ACCESS_TOKEN");
@@ -128,7 +133,6 @@ async function syncFacebook() {
         `https://graph.facebook.com/v19.0/${pageId}/posts?fields=${encodeURIComponent(fields)}&limit=10&access_token=${token}`
     );
     const data = await res.json();
-    lastFacebookDebug = { status: res.status, sample: data.data ? data.data[0] : data };
     if (data.error) {
         console.error("facebook error:", data.error);
         return;
@@ -274,7 +278,7 @@ async function syncTikTok() {
     await upsertPosts(rows);
 }
 
-Deno.serve(async (req) => {
+Deno.serve(async (_req) => {
     const results = await Promise.allSettled([
         syncYouTube(),
         syncFacebook(),
@@ -285,14 +289,6 @@ Deno.serve(async (req) => {
     const errors = results
         .filter((r): r is PromiseRejectedResult => r.status === "rejected")
         .map((r) => String(r.reason));
-
-    const url = new URL(req.url);
-    if (url.searchParams.get("debug") === "1") {
-        return new Response(
-            JSON.stringify({ ok: errors.length === 0, errors, facebook_debug: lastFacebookDebug }, null, 2),
-            { headers: { "Content-Type": "application/json" } }
-        );
-    }
 
     return new Response(
         JSON.stringify({ ok: errors.length === 0, errors }),
