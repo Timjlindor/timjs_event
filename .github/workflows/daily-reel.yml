@@ -1,0 +1,50 @@
+name: Reel quotidien 7h
+
+on:
+  schedule:
+    # 11:00 UTC ≈ 7h00 en Haïti l'été (EDT, UTC-4).
+    # En hiver (EST, UTC-5), 11:00 UTC = 6h00 : passez à "0 12 * * *" si besoin.
+    # (Note : GitHub peut retarder les tâches planifiées de quelques minutes.)
+    - cron: "0 11 * * *"
+  workflow_dispatch: {}   # bouton "Run workflow" pour tester manuellement
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily-reel
+  cancel-in-progress: false
+
+jobs:
+  reel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le dépôt (photos incluses)
+        uses: actions/checkout@v4
+
+      - name: Installer ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Générer et publier le reel du jour
+        env:
+          SITE_BASE_URL: "https://timjlindor.github.io/timjs_event"
+          # --- Site (Supabase) ---
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          # --- Instagram + Facebook (Meta, même token) ---
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          # --- TikTok ---
+          TIKTOK_ACCESS_TOKEN: ${{ secrets.TIKTOK_ACCESS_TOKEN }}
+          # --- YouTube (refresh token recommandé pour le mode quotidien) ---
+          YOUTUBE_ACCESS_TOKEN: ${{ secrets.YOUTUBE_ACCESS_TOKEN }}
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: node automation/daily-reel.mjs
