@@ -81,3 +81,29 @@
         }
     });
 })();
+
+/* ===== Compteur de visiteurs (léger, respectueux de la vie privée) =====
+   Enregistre UNE visite par session de navigateur dans Supabase (table
+   page_views). Aucune donnée personnelle : seulement la page et la date.
+   La table + les droits sont à créer une fois (voir COMPTEUR-VISITEURS.md). */
+(function () {
+    if (location.protocol !== "http:" && location.protocol !== "https:") return;
+    try {
+        if (sessionStorage.getItem("visitCounted") === "1") return;
+        sessionStorage.setItem("visitCounted", "1");
+    } catch (e) { /* sessionStorage indisponible : on compte quand même */ }
+
+    var URL = "https://zcgwkvuyxosxfyxwmfim.supabase.co";
+    var ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjZ3drdnV5eG9zeGZ5eHdtZmltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3NzAyMTksImV4cCI6MjA4NjM0NjIxOX0.x1VNiNBu1N8dshlgwTBBW2_GhUtovSnjQs_mYZuLUgw";
+
+    fetch(URL + "/rest/v1/page_views", {
+        method: "POST",
+        headers: {
+            "apikey": ANON,
+            "Authorization": "Bearer " + ANON,
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal"
+        },
+        body: JSON.stringify({ path: location.pathname })
+    }).catch(function () { /* silencieux : ne jamais gêner la visite */ });
+})();
