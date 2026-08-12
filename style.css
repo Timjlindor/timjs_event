@@ -1488,6 +1488,29 @@ canvas {
     border: 0;
 }
 
+/* Publication Facebook officielle intégrée : Facebook rend lui-même le
+   post avec ses vrais compteurs de réactions et de commentaires. */
+.post-embed-wrap {
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.post-embed-wrap iframe {
+    width: 500px;
+    max-width: 100%;
+    height: 640px;
+    border: 0;
+}
+
+.post-embed-wrap.text-only iframe {
+    height: 260px;
+}
+
 .post-stats {
     display: flex;
     gap: 10px;
@@ -1623,12 +1646,12 @@ canvas {
    ✨ Arrière-plan animé & effets 3D (ajout)
    ========================================================= */
 
-/* ----- Arrière-plan : image plein écran (fixe) + léger voile ----- */
-/* On rend le fond du body transparent pour laisser voir l'image ci-dessous */
+/* ----- Arrière-plan : sobre, chic, aux couleurs de la marque ----- */
 body {
     background: transparent;
 }
 
+/* Base crème + lueurs dorées très subtiles (fixe) */
 body::before {
     content: "";
     position: fixed;
@@ -1636,11 +1659,13 @@ body::before {
     z-index: -2;
     pointer-events: none;
     background:
-        linear-gradient(180deg, rgba(247, 245, 241, 0.34), rgba(247, 245, 241, 0.48)),
-        url("css/fondjpeg.jpeg") center center / cover no-repeat;
-    animation: bgZoom 34s ease-in-out infinite alternate;
+        radial-gradient(62% 52% at 10% -4%, rgba(201, 162, 75, 0.12), transparent 60%),
+        radial-gradient(55% 50% at 102% 6%, rgba(154, 122, 69, 0.09), transparent 60%),
+        radial-gradient(72% 60% at 50% 104%, rgba(241, 230, 207, 0.40), transparent 66%),
+        var(--bg);
 }
 
+/* Voile de profondeur discret sur les bords */
 body::after {
     content: "";
     position: fixed;
@@ -1648,12 +1673,7 @@ body::after {
     z-index: -1;
     pointer-events: none;
     background:
-        radial-gradient(135% 115% at 50% -8%, transparent 60%, rgba(28, 26, 23, 0.14) 100%);
-}
-
-@keyframes bgZoom {
-    from { transform: scale(1);    }
-    to   { transform: scale(1.08); }
+        radial-gradient(140% 120% at 50% -12%, transparent 64%, rgba(28, 26, 23, 0.05) 100%);
 }
 
 /* ----- Perspective des conteneurs pour la 3D ----- */
@@ -1678,19 +1698,19 @@ body::after {
 
 .card:hover,
 .stat:hover {
-    transform: translateY(-7px) rotateX(6deg) rotateY(-6deg) scale(1.02);
+    transform: translateY(-5px) scale(1.01);
     box-shadow:
         var(--shadow-lg),
-        0 0 0 1px rgba(201, 162, 75, 0.35);
+        0 0 0 1px rgba(201, 162, 75, 0.22);
 }
 
 .decor-card:hover,
 .fun-card:hover,
 .payment-card:hover {
-    transform: translateY(-7px) rotateX(5deg) rotateY(-5deg) scale(1.015);
+    transform: translateY(-5px) scale(1.01);
     box-shadow:
         var(--shadow-lg),
-        0 0 0 1px rgba(201, 162, 75, 0.30);
+        0 0 0 1px rgba(201, 162, 75, 0.20);
 }
 
 /* ----- Bannière de profil : aurore dorée animée (joli fond) ----- */
@@ -1826,7 +1846,7 @@ body::after {
 }
 
 .btn:hover {
-    transform: translateY(-3px) rotateX(12deg);
+    transform: translateY(-2px);
 }
 
 .btn:active {
@@ -1855,4 +1875,33 @@ body::after {
     .btn:hover {
         transform: none;
     }
+}
+
+/* ----- Finitions professionnelles ----- */
+/* Les ancres (#styles…) ne passent plus sous la barre de navigation fixe */
+html {
+    scroll-padding-top: 96px;
+}
+
+/* Contour de focus clavier net et accessible (touche pro) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+
+/* Libellés (« tags ») plus sobres et premium */
+.tag {
+    letter-spacing: 0.05em;
+}
+
+/* Rendu net et cohérent des visuels */
+.hero-banner,
+.gallery-grid img,
+.decor-card img {
+    background: var(--bg-alt);
 }
