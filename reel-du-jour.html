@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <!-- Adresse officielle du site : timjs-event.vercel.app.
+         Les anciens liens GitHub Pages y sont redirigés automatiquement. -->
+    <script>
+        (function () {
+            if (location.hostname !== "timjlindor.github.io") return;
+            var p = location.pathname.replace(/^\/timjs_event/, "") || "/";
+            location.replace("https://timjs-event.vercel.app" + p + location.search + location.hash);
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reel du jour — à publier</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Page de travail interne : jamais indexée par les moteurs de recherche. -->
+    <meta name="robots" content="noindex, nofollow">
+    <style>
+        .reel-layout { display: grid; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); gap: 2rem; align-items: start; }
+        @media (max-width: 760px) { .reel-layout { grid-template-columns: 1fr; } }
+        .reel-video { width: 100%; border-radius: 14px; background: #000; display: block; }
+        .reel-caption { width: 100%; min-height: 260px; font: inherit; line-height: 1.5; padding: 1rem;
+                        border-radius: 12px; border: 1px solid rgba(0, 0, 0, .18); background: rgba(255, 255, 255, .75);
+                        color: inherit; resize: vertical; }
+        .reel-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin: 1rem 0; }
+        .reel-status { padding: 1rem 0; opacity: .85; }
+        .reel-status.error { color: #a1272b; font-weight: 600; }
+        .reel-steps { counter-reset: step; list-style: none; padding: 0; }
+        .reel-steps li { counter-increment: step; margin: .55rem 0; padding-left: 2.4rem; position: relative; }
+        .reel-steps li::before { content: counter(step); position: absolute; left: 0; top: -1px;
+                                 width: 1.7rem; height: 1.7rem; border-radius: 50%; display: grid; place-items: center;
+                                 font-size: .85rem; font-weight: 700; background: rgba(0, 0, 0, .1); }
+    </style>
+</head>
+<body>
+    <nav class="site-nav">
+        <a class="brand" href="index.html"><img src="Timjs.PNG" alt="Timj">Timj Multi-Services</a>
+        <div class="nav-links">
+            <a href="index.html">Accueil</a>
+            <a href="Decoration.html">Décoration</a>
+            <a href="Photographie.html">Photographie</a>
+            <a href="Premiers-Soins.html">Premiers soins</a>
+            <a class="cta-link" href="reservation.html">Réservation</a>
+        </div>
+    </nav>
+
+    <section class="section">
+        <span class="tag">Page de travail</span>
+        <h2>🎬 Reel du jour</h2>
+        <p>Le reel est fabriqué automatiquement chaque matin à 7h. Récupère la vidéo et la légende ici, puis publie-les sur Instagram et Facebook. Cette page n'est pas référencée par Google.</p>
+        <p id="reel-status" class="reel-status">Chargement du reel du jour…</p>
+    </section>
+
+    <section class="section" id="reel-content" hidden>
+        <div class="reel-layout">
+            <div>
+                <video id="reel-video" class="reel-video" controls playsinline preload="metadata"></video>
+                <div class="reel-actions">
+                    <a class="btn" id="btn-download" href="#">⬇️ Télécharger la vidéo</a>
+                </div>
+                <p class="footer-meta" id="reel-meta"></p>
+            </div>
+
+            <div>
+                <h3>Légende (modifiable avant de copier)</h3>
+                <textarea id="reel-caption" class="reel-caption" spellcheck="false"></textarea>
+                <div class="reel-actions">
+                    <button class="btn" type="button" id="btn-copy-all">📋 Copier la légende</button>
+                    <button class="btn secondary" type="button" id="btn-copy-tags">#️⃣ Copier les hashtags</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="reel-howto" hidden>
+        <h2>Publier en 2 minutes</h2>
+        <ol class="reel-steps">
+            <li>Télécharge la vidéo et copie la légende ci-dessus.</li>
+            <li>Ouvre <a href="https://business.facebook.com/latest/composer" target="_blank" rel="noopener">Meta Business Suite</a> (Créer une publication).</li>
+            <li>Coche <strong>Instagram</strong> et <strong>Facebook</strong> pour publier sur les deux d'un coup.</li>
+            <li>Dépose la vidéo, colle la légende, puis publie ou programme.</li>
+        </ol>
+        <div class="hero-actions">
+            <a class="btn" href="https://business.facebook.com/latest/composer" target="_blank" rel="noopener">Ouvrir Meta Business Suite</a>
+            <a class="btn secondary" href="https://www.tiktok.com/upload" target="_blank" rel="noopener">Ouvrir TikTok</a>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <p>Timj Multi-Services — Suivez-moi sur les réseaux sociaux</p>
+        <div class="social-links">
+            <a href="https://www.facebook.com/Lindorkiki22" target="_blank" rel="noopener">Facebook</a>
+            <a href="https://www.tiktok.com/@timjsphotograpy" target="_blank" rel="noopener">TikTok</a>
+            <a href="https://youtube.com/@timjs2021?si=CJsM3ynGVBMxIUPc" target="_blank" rel="noopener">YouTube</a>
+            <a href="https://www.instagram.com/timjsphotography?igsh=bWY2Z3docmltZG56&utm_source=qr" target="_blank" rel="noopener">Instagram</a>
+            <a href="https://wa.me/c/50931642817" target="_blank" rel="noopener">WhatsApp</a>
+        </div>
+        <p class="footer-meta">Tous droits réservés à la Famille Lindor</p>
+    </footer>
+
+    <script>
+    (function () {
+        var SUPABASE = "https://zcgwkvuyxosxfyxwmfim.supabase.co";
+        var ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjZ3drdnV5eG9zeGZ5eHdtZmltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA3NzAyMTksImV4cCI6MjA4NjM0NjIxOX0.x1VNiNBu1N8dshlgwTBBW2_GhUtovSnjQs_mYZuLUgw";
+
+        var statusEl = document.getElementById("reel-status");
+        var contentEl = document.getElementById("reel-content");
+        var howtoEl = document.getElementById("reel-howto");
+        var videoEl = document.getElementById("reel-video");
+        var captionEl = document.getElementById("reel-caption");
+        var metaEl = document.getElementById("reel-meta");
+        var dlBtn = document.getElementById("btn-download");
+
+        function fail(msg) {
+            statusEl.textContent = msg;
+            statusEl.classList.add("error");
+        }
+
+        // Confirmation visuelle sur un bouton, puis retour au libellé d'origine.
+        function flash(btn, msg) {
+            var old = btn.textContent;
+            btn.textContent = msg;
+            setTimeout(function () { btn.textContent = old; }, 1600);
+        }
+
+        function copy(text, btn) {
+            function legacy() {
+                var ta = document.createElement("textarea");
+                ta.value = text;
+                ta.style.position = "fixed";
+                ta.style.opacity = "0";
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand("copy"); flash(btn, "✅ Copié !"); }
+                catch (e) { flash(btn, "❌ Copie impossible"); }
+                document.body.removeChild(ta);
+            }
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text)
+                    .then(function () { flash(btn, "✅ Copié !"); })
+                    .catch(legacy);
+            } else {
+                legacy();
+            }
+        }
+
+        fetch(SUPABASE + "/rest/v1/annonces?select=created_at,body&title=eq." +
+              encodeURIComponent("🎬 Reel du jour") + "&order=created_at.desc&limit=1", {
+            headers: { apikey: ANON, Authorization: "Bearer " + ANON }
+        })
+        .then(function (r) {
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            return r.json();
+        })
+        .then(function (rows) {
+            if (!rows || !rows.length) {
+                fail("Aucun reel trouvé pour l'instant. Le prochain est fabriqué demain à 7h.");
+                return;
+            }
+            var row = rows[0];
+            var body = row.body || "";
+
+            // La légende s'arrête avant la ligne « ▶ Vidéo : ».
+            var caption = body.split(/\n+▶\s*Vidéo\s*:/)[0].trim();
+            var videoUrl = (body.match(/▶\s*Vidéo\s*:\s*(\S+)/) || [])[1];
+
+            // Les reels d'avant le 13/08/2026 citent l'ancienne adresse GitHub Pages.
+            caption = caption.replace(/https:\/\/timjlindor\.github\.io\/timjs_event/g,
+                                      "https://timjs-event.vercel.app");
+
+            if (!videoUrl) {
+                fail("Le reel du jour n'a pas de vidéo attachée. Vérifie le journal du workflow.");
+                return;
+            }
+
+            var d = new Date(row.created_at);
+            var day = d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+            var fileName = (videoUrl.split("/").pop() || "reel.mp4").split("?")[0];
+
+            videoEl.src = videoUrl;
+            captionEl.value = caption;
+            metaEl.textContent = "Fabriqué le " + day + " · " + fileName;
+
+            dlBtn.href = videoUrl;
+            dlBtn.setAttribute("download", fileName);
+            dlBtn.addEventListener("click", function (e) {
+                // L'attribut download est ignoré en cross-origin : on passe par un blob
+                // pour que le fichier arrive bien dans les Téléchargements.
+                e.preventDefault();
+                var old = dlBtn.textContent;
+                dlBtn.textContent = "⏳ Téléchargement…";
+                fetch(videoUrl)
+                    .then(function (r) { return r.blob(); })
+                    .then(function (blob) {
+                        var u = URL.createObjectURL(blob);
+                        var a = document.createElement("a");
+                        a.href = u;
+                        a.download = fileName;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        setTimeout(function () { URL.revokeObjectURL(u); }, 60000);
+                        dlBtn.textContent = old;
+                    })
+                    .catch(function () {
+                        // Repli : on ouvre la vidéo, l'utilisateur fait « Enregistrer sous ».
+                        dlBtn.textContent = old;
+                        window.open(videoUrl, "_blank", "noopener");
+                    });
+            });
+
+            document.getElementById("btn-copy-all").addEventListener("click", function () {
+                copy(captionEl.value, this);
+            });
+            document.getElementById("btn-copy-tags").addEventListener("click", function () {
+                var tags = (captionEl.value.match(/#[^\s#]+/g) || []).join(" ");
+                if (!tags) { flash(this, "Aucun hashtag"); return; }
+                copy(tags, this);
+            });
+
+            statusEl.hidden = true;
+            contentEl.hidden = false;
+            howtoEl.hidden = false;
+        })
+        .catch(function (err) {
+            fail("Impossible de charger le reel du jour (" + err.message + ").");
+        });
+    })();
+    </script>
+    <script src="premium.js" defer></script>
+</body>
+</html>
