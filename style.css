@@ -1529,12 +1529,26 @@ canvas {
 
 @media (max-width: 900px) {
     .home-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* Permet aux colonnes de la grille de rétrécir sous la largeur de leur contenu */
+    .home-main,
+    .home-sidebar {
+        min-width: 0;
     }
 
     .home-sidebar {
         position: static;
     }
+}
+
+/* Aperçus de publications (Facebook / YouTube / Instagram) responsives :
+   les iframes ont une largeur fixe qui débordait sur mobile. */
+.feed iframe,
+.post-card iframe,
+.home-main iframe {
+    max-width: 100% !important;
 }
 
 @media (max-width: 560px) {
