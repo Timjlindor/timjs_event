@@ -19,7 +19,7 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 
 const env = process.env;
-const SITE_BASE_URL = env.SITE_BASE_URL || "https://timjlindor.github.io/timjs_event";
+const SITE_BASE_URL = env.SITE_BASE_URL || "https://timjs-event.vercel.app";
 const PHOTO_ROOT = "Photographie";
 const OUT_VIDEO = "reel.mp4";
 const AUDIO_PATH = env.AUDIO_PATH || "audio/timj-reels-instrumental.mp3";

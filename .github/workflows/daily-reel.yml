@@ -32,7 +32,7 @@ jobs:
 
       - name: Générer et publier le reel du jour
         env:
-          SITE_BASE_URL: "https://timjlindor.github.io/timjs_event"
+          SITE_BASE_URL: "https://timjs-event.vercel.app"
           # --- Site (Supabase) ---
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
