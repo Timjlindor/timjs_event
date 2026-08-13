@@ -63,8 +63,20 @@ a {
     text-decoration: none;
 }
 
-img {
+/* Tous les médias/éléments larges s'adaptent à l'appareil (jamais de débordement) */
+img,
+video,
+iframe,
+table,
+pre,
+canvas,
+svg {
     max-width: 100%;
+}
+
+img,
+video {
+    height: auto;
 }
 
 ::selection {
