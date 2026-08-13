@@ -1349,6 +1349,7 @@ canvas {
 /* ===== Fil de publications ===== */
 .feed {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 16px;
     margin-top: 16px;
 }
@@ -1359,6 +1360,9 @@ canvas {
     border: 1px solid var(--border);
     background: var(--bg-alt);
     box-shadow: var(--shadow-sm);
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 
 .post-header {
