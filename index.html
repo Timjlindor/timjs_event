@@ -314,20 +314,34 @@
                 throw annoncesRes.error;
             }
 
-            const annonces = (annoncesRes.data || []).map((item) => ({
-                source: "annonce",
-                id: item.id,
-                platform: null,
-                title: item.title,
-                body: item.body,
-                thumbnail: null,
-                permalink: null,
-                date: item.created_at,
-                mediaType: "text",
-                videoEmbedUrl: null,
-                likeCount: null,
-                commentCount: null
-            }));
+            const annonces = (annoncesRes.data || []).map((item) => {
+                // Le reel quotidien range sa vidéo et sa photo en fin de corps
+                // (« ▶ Vidéo : … », « 🖼️ Photo : … »). On les sort du texte pour
+                // les afficher comme un vrai lecteur plutôt qu'un lien brut.
+                const raw = item.body || "";
+                const videoUrl = (raw.match(/▶\s*Vidéo\s*:\s*(\S+)/) || [])[1] || null;
+                const photoUrl = (raw.match(/🖼️?\s*Photo\s*:\s*(\S+)/) || [])[1] || null;
+                let body = raw
+                    .replace(/\n*▶\s*Vidéo\s*:\s*\S+/g, "")
+                    .replace(/\n*🖼️?\s*Photo\s*:\s*\S+/g, "")
+                    .trim();
+
+                return {
+                    source: "annonce",
+                    id: item.id,
+                    platform: null,
+                    title: item.title,
+                    body: body,
+                    thumbnail: videoUrl ? null : photoUrl,
+                    permalink: null,
+                    date: item.created_at,
+                    mediaType: videoUrl ? "video-file" : "text",
+                    videoEmbedUrl: null,
+                    videoFileUrl: videoUrl,
+                    likeCount: null,
+                    commentCount: null
+                };
+            });
 
             const social = (socialRes.data || []).map((item) => ({
                 source: "social",
@@ -340,6 +354,7 @@
                 date: item.published_at,
                 mediaType: item.media_type,
                 videoEmbedUrl: item.video_embed_url,
+                videoFileUrl: null,
                 likeCount: item.like_count,
                 commentCount: item.comment_count
             }));
@@ -456,6 +471,22 @@
                     iframe.setAttribute("title", "Publication Facebook");
                     embedWrap.appendChild(iframe);
                     card.appendChild(embedWrap);
+                } else if (item.mediaType === "video-file" && item.videoFileUrl) {
+                    // Vidéo que nous hébergeons (reel du jour) : lecteur natif,
+                    // pas d'iframe. Format vertical 9/16 comme les reels.
+                    const videoWrap = document.createElement("div");
+                    videoWrap.className = "post-video-wrap vertical";
+                    const video = document.createElement("video");
+                    video.src = item.videoFileUrl;
+                    video.controls = true;
+                    video.playsInline = true;
+                    // Pas de poster : les photos d'origine pèsent plusieurs Mo et
+                    // seraient téléchargées à chaque visite de l'accueil. Avec
+                    // preload="metadata", seul l'en-tête de la vidéo est chargé.
+                    video.preload = "metadata";
+                    video.setAttribute("title", item.title || "Reel du jour");
+                    videoWrap.appendChild(video);
+                    card.appendChild(videoWrap);
                 } else if (item.mediaType === "video" && item.videoEmbedUrl) {
                     const videoWrap = document.createElement("div");
                     videoWrap.className = "post-video-wrap" + (item.platform === "tiktok" || item.platform === "instagram" ? " vertical" : "");
