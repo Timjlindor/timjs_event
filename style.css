@@ -729,6 +729,7 @@ form {
     padding: 20px 22px;
     border-radius: var(--radius);
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 12px;
 }
 
@@ -1055,6 +1056,7 @@ canvas {
 
 .auth-form {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 10px;
 }
 
@@ -1451,12 +1453,20 @@ canvas {
     margin-right: auto;
 }
 
-.post-video-wrap iframe {
+.post-video-wrap iframe,
+.post-video-wrap video {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     border: 0;
+}
+
+/* Vidéo hébergée par nous (reel du jour) : lecteur natif. « contain »
+   garantit qu'aucun bord n'est rogné si le format diffère du cadre. */
+.post-video-wrap video {
+    object-fit: contain;
+    background: var(--ink);
 }
 
 /* Publication Facebook officielle intégrée : Facebook rend lui-même le
