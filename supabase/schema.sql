@@ -198,6 +198,41 @@ alter table public.social_posts
     add column if not exists comment_count integer;
 
 -- ============================================================
+-- 6. Compteur réel de parties jouées (page Jeu — défi communautaire)
+-- ============================================================
+--
+-- Chaque partie terminée insère une ligne. Aucune donnée personnelle :
+-- juste un score et une date. Lecture ET écriture publiques, car c'est
+-- un compteur affiché à tous, pas une donnée privée comme les
+-- réservations.
+
+create table if not exists public.game_plays (
+    id uuid primary key default gen_random_uuid(),
+    game text not null default 'arcade',
+    score integer not null default 0,
+    played_at timestamptz not null default now()
+);
+
+alter table public.game_plays enable row level security;
+
+drop policy if exists "Enregistrer une partie" on public.game_plays;
+create policy "Enregistrer une partie"
+    on public.game_plays
+    for insert
+    to anon, authenticated
+    with check (score >= 0 and score <= 100000);
+
+drop policy if exists "Voir le nombre de parties" on public.game_plays;
+create policy "Voir le nombre de parties"
+    on public.game_plays
+    for select
+    to anon, authenticated
+    using (true);
+
+create index if not exists game_plays_played_at_idx
+    on public.game_plays (played_at desc);
+
+-- ============================================================
 -- Récapitulatif des accès
 -- ============================================================
 -- - Formulaire de réservation (site) : peut seulement INSÉRER une ligne

@@ -803,13 +803,15 @@ canvas {
     border-radius: var(--radius-sm);
 }
 
-/* ===== Snake game controls ===== */
+/* ===== Jeu d'arcade : en-tête, actions ===== */
 .game-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
     font-weight: 600;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .game-header .status {
@@ -817,28 +819,84 @@ canvas {
     color: var(--muted);
 }
 
-.controls {
-    display: grid;
-    grid-template-columns: 60px 60px 60px;
-    grid-template-rows: 40px 40px 40px;
-    gap: 6px;
-    justify-content: center;
-    margin: 14px 0;
-}
-
-.controls button {
-    padding: 6px;
-    font-size: 13px;
+.game-stats {
+    display: flex;
+    gap: 16px;
 }
 
 .actions {
     display: flex;
     gap: 8px;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .actions button {
     padding: 8px 16px;
+}
+
+.game-flap-btn {
+    display: block;
+    width: 100%;
+    margin: 14px 0;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+/* ===== Défi communautaire (barre de progression) ===== */
+.challenge-banner {
+    max-width: var(--container);
+    margin: 0 auto 20px;
+    padding: 20px 24px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.challenge-banner-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.challenge-banner h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.challenge-count {
+    font-family: "Fraunces", serif;
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 15px;
+}
+
+.challenge-track {
+    height: 10px;
+    border-radius: 999px;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.challenge-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--gold));
+    border-radius: 999px;
+    transition: width 0.6s var(--ease);
+}
+
+.challenge-caption {
+    margin: 8px 0 0;
+    font-size: 12.5px;
+    color: var(--muted);
 }
 
 .back-link {
