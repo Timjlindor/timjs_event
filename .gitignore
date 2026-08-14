@@ -9,3 +9,6 @@ supabase/.branches/
 reel.mp4
 # Version WAV volumineuse de l'instrumentale (on garde seulement le .mp3)
 audio/*.wav
+
+# Reels générés à la main (aperçus, non publiés)
+reels-generes/
