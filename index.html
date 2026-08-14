@@ -15,6 +15,12 @@
     <meta name="tiktok-developers-site-verification" content="o0nu9c8VDN2bzIlz9GS3Kk5t3NUChY4E">
     <title>Timj Multi-Services — Annonces &amp; Nouveautés</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1c1a17">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Timj">
+    <link rel="apple-touch-icon" href="/Timjs.PNG">
+    <script src="js/push.js" defer></script>
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4130053569615277"
          crossorigin="anonymous"></script>
@@ -173,6 +179,13 @@
         </div>
 
         <aside class="home-sidebar">
+            <section class="section" id="notif">
+                <h2>🔔 Reel du jour</h2>
+                <p>Reçois une notification directement sur ton téléphone chaque matin quand le nouveau reel est en ligne — ne rate plus rien !</p>
+                <button type="button" id="pushSubscribeBtn" class="btn">🔔 M'abonner</button>
+                <p id="pushStatus" class="album-description spaced"></p>
+            </section>
+
             <section class="section">
                 <h2>Infos</h2>
                 <p class="album-description">Décoration, photographie &amp; vidéographie, premiers soins — réservation par MonCash ou NatCash.</p>

@@ -48,3 +48,16 @@ jobs:
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
         run: node automation/daily-reel.mjs
+
+      - name: Notifier les abonnés (notifications push)
+        if: always()
+        env:
+          SITE_BASE_URL: "https://timjs-event.vercel.app"
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          VAPID_SUBJECT: "mailto:lindorelie23@gmail.com"
+        run: |
+          npm install web-push --no-save
+          node automation/send-push.mjs
